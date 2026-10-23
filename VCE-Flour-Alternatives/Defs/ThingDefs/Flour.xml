@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- The stat values and parent mirror VCE_Flour to keep nutritional equivalence. -->
+  <ThingDef ParentName="RoughPlantBase">
+    <defName>PFA_RiceFlour</defName>
+    <label>rice flour</label>
+    <description>Rice ground into a fine white powder. It can be used in baked meals in place of wheat flour.</description>
+    <soundInteract>Grain_Drop</soundInteract>
+    <soundDrop>Grain_Drop</soundDrop>
+    <graphicData>
+      <texPath>Things/Items/Raw/VCE_Rice_Flour</texPath>
+    </graphicData>
+    <statBases>
+      <MarketValue>1.9</MarketValue>
+      <Nutrition>0.05</Nutrition>
+      <Flammability>1.3</Flammability>
+    </statBases>
+    <thingCategories><li>PlantMatter</li></thingCategories>
+    <comps>
+      <li Class="CompProperties_Rottable">
+        <daysToRotStart>100</daysToRotStart>
+        <rotDestroys>true</rotDestroys>
+      </li>
+    </comps>
+    <ingestible><preferability>NeverForNutrition</preferability></ingestible>
+  </ThingDef>
+
+  <ThingDef ParentName="RoughPlantBase">
+    <defName>PFA_Cornmeal</defName>
+    <label>cornmeal</label>
+    <description>Corn ground into golden meal. It can be used in baked meals in place of wheat flour.</description>
+    <soundInteract>Grain_Drop</soundInteract>
+    <soundDrop>Grain_Drop</soundDrop>
+    <graphicData>
+      <texPath>Things/Items/Raw/VCE_Cornmeal</texPath>
+    </graphicData>
+    <statBases>
+      <MarketValue>1.9</MarketValue>
+      <Nutrition>0.05</Nutrition>
+      <Flammability>1.3</Flammability>
+    </statBases>
+    <thingCategories><li>PlantMatter</li></thingCategories>
+    <comps>
+      <li Class="CompProperties_Rottable">
+        <daysToRotStart>100</daysToRotStart>
+        <rotDestroys>true</rotDestroys>
+      </li>
+    </comps>
+    <ingestible><preferability>NeverForNutrition</preferability></ingestible>
+  </ThingDef>
+</Defs>

@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RimWorldVersion Condition="'$(RimWorldVersion)' == ''">1.6</RimWorldVersion>
+    <TargetFramework Condition="'$(RimWorldVersion)' == '1.6'">net472</TargetFramework>
+    <TargetFramework Condition="'$(RimWorldVersion)' == '1.7'">net10.0</TargetFramework>
+    <RimRefVersion Condition="'$(RimWorldVersion)' == '1.6'">1.6.4871</RimRefVersion>
+    <RimRefVersion Condition="'$(RimWorldVersion)' == '1.7'">1.7.4985-unstable</RimRefVersion>
+    <HarmonyVersion Condition="'$(RimWorldVersion)' == '1.6'">2.4.3</HarmonyVersion>
+    <HarmonyVersion Condition="'$(RimWorldVersion)' == '1.7'">3.0.0-rc.3</HarmonyVersion>
+    <Nullable>disable</Nullable><ImplicitUsings>disable</ImplicitUsings><LangVersion>7.3</LangVersion>
+    <AssemblyName>VCEFlourAlternatives</AssemblyName><OutputType>Library</OutputType>
+    <Deterministic>true</Deterministic><GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <Version>0.1.0</Version><CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <NuGetAudit>false</NuGetAudit>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(RimWorldManagedDir)' == ''">
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="$(RimRefVersion)" PrivateAssets="all" IncludeAssets="compile;build" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(RimWorldManagedDir)' != ''">
+    <Reference Include="$(RimWorldManagedDir)/*.dll"><Private>false</Private></Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(HarmonyAssemblyPath)' == ''">
+    <PackageReference Include="Lib.Harmony" Version="$(HarmonyVersion)" PrivateAssets="all" IncludeAssets="compile" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(HarmonyAssemblyPath)' != ''">
+    <Reference Include="0Harmony"><HintPath>$(HarmonyAssemblyPath)</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+  <Target Name="ValidateInputs" BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(RimWorldVersion)' != '1.6' and '$(RimWorldVersion)' != '1.7'" Text="RimWorldVersion must be 1.6 or 1.7" />
+    <Error Condition="'$(RimWorldManagedDir)' != '' and !Exists('$(RimWorldManagedDir)/Assembly-CSharp.dll')" Text="RimWorldManagedDir must contain Assembly-CSharp.dll" />
+    <Error Condition="'$(HarmonyAssemblyPath)' != '' and !Exists('$(HarmonyAssemblyPath)')" Text="HarmonyAssemblyPath does not exist" />
+  </Target>
+</Project>

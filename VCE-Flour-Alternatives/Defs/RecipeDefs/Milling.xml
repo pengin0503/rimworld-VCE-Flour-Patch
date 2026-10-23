@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <RecipeDef>
+    <defName>PFA_MillRice</defName>
+    <label>mill rice into rice flour</label>
+    <description>Grind 10 rice into 10 rice flour, which can replace wheat flour in VCE baked meals.</description>
+    <jobString>Grinding rice into rice flour.</jobString>
+    <workAmount>400</workAmount>
+    <workSkill>Cooking</workSkill>
+    <workSpeedStat>CookSpeed</workSpeedStat>
+    <effectWorking>Cook</effectWorking>
+    <soundWorking>Recipe_CookMeal</soundWorking>
+    <recipeUsers>
+      <li>FueledStove</li>
+      <li>ElectricStove</li>
+    </recipeUsers>
+    <fixedIngredientFilter>
+      <thingDefs><li>RawRice</li></thingDefs>
+    </fixedIngredientFilter>
+    <defaultIngredientFilter>
+      <thingDefs><li>RawRice</li></thingDefs>
+    </defaultIngredientFilter>
+    <ingredients>
+      <li>
+        <filter><thingDefs><li>RawRice</li></thingDefs></filter>
+        <count>10</count>
+      </li>
+    </ingredients>
+    <products><PFA_RiceFlour>10</PFA_RiceFlour></products>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>PFA_MillCorn</defName>
+    <label>mill corn into cornmeal</label>
+    <description>Grind 10 corn into 10 cornmeal, which can replace wheat flour in VCE baked meals.</description>
+    <jobString>Grinding corn into cornmeal.</jobString>
+    <workAmount>400</workAmount>
+    <workSkill>Cooking</workSkill>
+    <workSpeedStat>CookSpeed</workSpeedStat>
+    <effectWorking>Cook</effectWorking>
+    <soundWorking>Recipe_CookMeal</soundWorking>
+    <recipeUsers>
+      <li>FueledStove</li>
+      <li>ElectricStove</li>
+    </recipeUsers>
+    <fixedIngredientFilter>
+      <thingDefs><li>RawCorn</li></thingDefs>
+    </fixedIngredientFilter>
+    <defaultIngredientFilter>
+      <thingDefs><li>RawCorn</li></thingDefs>
+    </defaultIngredientFilter>
+    <ingredients>
+      <li>
+        <filter><thingDefs><li>RawCorn</li></thingDefs></filter>
+        <count>10</count>
+      </li>
+    </ingredients>
+    <products><PFA_Cornmeal>10</PFA_Cornmeal></products>
+  </RecipeDef>
+</Defs>

@@ -1,0 +1,9 @@
+**/bin/
+**/obj/
+**/__pycache__/
+.worktrees/
+.superpowers/
+artifacts/
+*.dll
+*.pdb
+*.nupkg

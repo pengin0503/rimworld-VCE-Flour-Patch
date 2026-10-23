@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Patch>
+  <Operation Class="PatchOperationSequence">
+    <operations>
+      <li Class="PatchOperationAdd">
+        <xpath>Defs/RecipeDef[defName="VCE_CookBakeSimple" or defName="VCE_CookBakeSimpleBulk" or defName="VCE_CookBakeFine" or defName="VCE_CookBakeFineBulk" or defName="VCE_CookBakeLavish" or defName="VCE_CookBakeLavishBulk" or defName="VCE_CookBakeGourmet"]</xpath>
+        <value>
+          <fixedIngredientFilter>
+            <thingDefs>
+              <li>PFA_RiceFlour</li>
+              <li>PFA_Cornmeal</li>
+            </thingDefs>
+          </fixedIngredientFilter>
+        </value>
+      </li>
+      <li Class="PatchOperationAdd">
+        <xpath>Defs/RecipeDef[defName="VCE_CookBakeSimple" or defName="VCE_CookBakeSimpleBulk" or defName="VCE_CookBakeFine" or defName="VCE_CookBakeFineBulk" or defName="VCE_CookBakeLavish" or defName="VCE_CookBakeLavishBulk" or defName="VCE_CookBakeGourmet"]</xpath>
+        <value>
+          <defaultIngredientFilter>
+            <thingDefs>
+              <li>PFA_RiceFlour</li>
+              <li>PFA_Cornmeal</li>
+            </thingDefs>
+          </defaultIngredientFilter>
+        </value>
+      </li>
+      <li Class="PatchOperationAdd">
+        <xpath>Defs/RecipeDef[defName="VCE_CookBakeSimple" or defName="VCE_CookBakeSimpleBulk" or defName="VCE_CookBakeFine" or defName="VCE_CookBakeFineBulk" or defName="VCE_CookBakeLavish" or defName="VCE_CookBakeLavishBulk" or defName="VCE_CookBakeGourmet"]/ingredients/li/filter/thingDefs[li="VCE_Flour"]</xpath>
+        <value>
+          <li>PFA_RiceFlour</li>
+          <li>PFA_Cornmeal</li>
+        </value>
+      </li>
+    </operations>
+  </Operation>
+</Patch>

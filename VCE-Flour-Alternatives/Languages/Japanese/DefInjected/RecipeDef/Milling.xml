@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <PFA_MillRice.label>米粉を作る</PFA_MillRice.label>
+  <PFA_MillRice.description>米10個から米粉10個を作る。</PFA_MillRice.description>
+  <PFA_MillRice.jobString>米を製粉しています。</PFA_MillRice.jobString>
+  <PFA_MillCorn.label>トウモロコシ粉を作る</PFA_MillCorn.label>
+  <PFA_MillCorn.description>トウモロコシ10個からトウモロコシ粉10個を作る。</PFA_MillCorn.description>
+  <PFA_MillCorn.jobString>トウモロコシを製粉しています。</PFA_MillCorn.jobString>
+</LanguageData>
