@@ -10,16 +10,31 @@ namespace VCEFlourAlternatives
 
         internal static readonly string[] AddedFlours = { "PFA_RiceFlour", "PFA_Cornmeal" };
 
-        internal static bool IsTarget(string name)
+        internal static readonly string[] TargetRecipes =
         {
-            switch (name)
-            {
-                case "VCE_CookBakeSimple": case "VCE_CookBakeSimpleBulk":
-                case "VCE_CookBakeFine": case "VCE_CookBakeFineBulk":
-                case "VCE_CookBakeLavish": case "VCE_CookBakeLavishBulk":
-                case "VCE_CookBakeGourmet": return true;
-                default: return false;
-            }
+            "VCE_CookBakeSimple", "VCE_CookBakeSimpleBulk", "VCE_CookBakeFine", "VCE_CookBakeFineBulk",
+            "VCE_CookBakeLavish", "VCE_CookBakeLavishBulk", "VCE_CookBakeGourmet",
+        };
+
+        internal static bool IsTarget(string name) => Array.IndexOf(TargetRecipes, name) >= 0;
+
+        // A bill saved before the mod only knows wheat; one that allows wheat is meant to use flour.
+        // Bills without wheat are the player's explicit choice and are never touched.
+        internal static bool NeedsAddedFlours(bool allowsWheat, IList<bool> allowsAdded)
+        {
+            if (!allowsWheat) return false;
+            for (int i = 0; i < allowsAdded.Count; i++)
+                if (!allowsAdded[i]) return true;
+            return false;
+        }
+
+        // Problems that leave a target recipe without exactly one flour slot, for the startup log.
+        internal static string SlotProblem(bool recipeExists, int slotsAcceptingWheat)
+        {
+            if (!recipeExists) return "recipe not found";
+            if (slotsAcceptingWheat == 0) return "no ingredient slot accepts wheat flour";
+            if (slotsAcceptingWheat > 1) return slotsAcceptingWheat + " ingredient slots accept wheat flour";
+            return null;
         }
 
         internal static bool TryChoose<T, C>(IReadOnlyList<T> available,

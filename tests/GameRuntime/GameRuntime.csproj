@@ -4,6 +4,11 @@
  <ItemGroup>
   <Reference Include="$(RimWorldManagedDir)/*.dll" Exclude="$(RimWorldManagedDir)/netstandard.dll;$(RimWorldManagedDir)/mscorlib.dll;$(RimWorldManagedDir)/System*.dll;$(RimWorldManagedDir)/Microsoft*.dll;$(RimWorldManagedDir)/0Harmony.dll" />
   <Reference Include="0Harmony"><HintPath>$(HarmonyAssemblyPath)</HintPath></Reference>
+  <!-- Game dependencies kept out of the compile references (Microsoft.*, System.*) are loaded from here at run time. -->
+  <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+   <_Parameter1>RimWorldManagedDir</_Parameter1>
+   <_Parameter2>$(RimWorldManagedDir)</_Parameter2>
+  </AssemblyAttribute>
  </ItemGroup>
  <Target Name="ValidateInputs" BeforeTargets="PrepareForBuild">
   <Error Condition="!Exists('$(RimWorldManagedDir)/Assembly-CSharp.dll')" Text="RimWorldManagedDir must contain the RimWorld 1.7 Assembly-CSharp.dll" />

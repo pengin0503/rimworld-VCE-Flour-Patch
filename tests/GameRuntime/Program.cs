@@ -23,6 +23,7 @@ static class Program
     static int Main(string[] args)
     {
         if (args.Length != 3) throw new ArgumentException("mod DLL, VCE Recipes_Bakes.xml and mod patch XML required");
+        ResolveFromManagedDir();
         var stubs = new Harmony("tests.gameruntime.stubs");
         Stub(stubs, AccessTools.PropertyGetter(typeof(ModsConfig), nameof(ModsConfig.AnomalyActive)), nameof(Stubs.False));
         Stub(stubs, AccessTools.PropertyGetter(typeof(GenTypes), nameof(GenTypes.AllTypes)), nameof(Stubs.AllTypes));
@@ -47,6 +48,20 @@ static class Program
         return failures == 0 ? 0 : 1;
     }
 
+    // The engine logs through Brutal/Microsoft.Extensions.Logging, which are not compile references;
+    // without this the first Log call fails before any check runs.
+    static void ResolveFromManagedDir()
+    {
+        string dir = typeof(Program).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
+            .FirstOrDefault(a => a.Key == "RimWorldManagedDir")?.Value;
+        if (string.IsNullOrEmpty(dir)) return;
+        System.Runtime.Loader.AssemblyLoadContext.Default.Resolving += (context, name) =>
+        {
+            string path = Path.Combine(dir, name.Name + ".dll");
+            return File.Exists(path) ? context.LoadFromAssemblyPath(path) : null;
+        };
+    }
+
     static void Stub(Harmony h, MethodBase m, string prefix) => h.Patch(m, prefix: new HarmonyMethod(typeof(Stubs), prefix));
 
     static void Check(string name, bool ok, string detail = "")
@@ -67,7 +82,11 @@ static class Program
             var op = new PatchOperationAdd();
             AccessTools.Field(typeof(PatchOperationPathed), "xpath").SetValue(op, li["xpath"].InnerText);
             AccessTools.Field(typeof(PatchOperationAdd), "value").SetValue(op, new XmlContainer { node = li["value"] });
-            Check("patch operation adds <" + li["value"].FirstChild.Name + "> to existing recipes", (bool)apply.Invoke(op, new object[] { doc }));
+            // Fallback alternatives may match nothing; the game counts them as succeeded (success=Always).
+            bool always = li["success"]?.InnerText == "Always";
+            bool applied = (bool)apply.Invoke(op, new object[] { doc });
+            Check("patch operation " + (applied ? "adds" : "skips") + " <" + li["value"].FirstChild.Name + "> at " + Truncate(li["xpath"].InnerText),
+                applied || always);
         }
         foreach (XmlNode node in doc.DocumentElement.ChildNodes)
             if (node.NodeType == XmlNodeType.Element) XmlInheritance.TryRegister(node, null);
@@ -95,6 +114,8 @@ static class Program
         }
         return summary;
     }
+
+    static string Truncate(string xpath) => xpath.Substring(xpath.LastIndexOf(']') + 1);
 
     static ThingDef Def(string name)
     {
@@ -184,6 +205,11 @@ static class Program
         }
         Check("control: inherited plant restriction hides all three flours",
             new[] { wheat, rice, corn }.All(f => !Visible(fine, f)));
+
+        // Game.FillComponents creates every GameComponent subclass through its (Game) constructor.
+        Type migration = mod.GetType("VCEFlourAlternatives.GameComponent_FlourBillMigration", true);
+        Check("bill migration is a GameComponent the game can create",
+            typeof(GameComponent).IsAssignableFrom(migration) && migration.GetConstructor(new[] { typeof(Game) }) != null);
 
         Type patch = mod.GetType("VCEFlourAlternatives.FlourSelectionPatch", true);
         // Same call Bootstrap makes; Bootstrap itself also logs, which needs the full engine.

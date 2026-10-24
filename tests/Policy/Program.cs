@@ -28,5 +28,11 @@ Check("failed attempt output discarded",()=>{var c=new List<Stack>{S("stale")};i
 Check("no flour still delegates for diagnostics",()=>{int n=0;var c=new List<Stack>();Assert(!FlourPolicy.TryChoose(new List<Stack>{S("meatA")},x=>(string)null,(a,b)=>{n++;return false;},c)&&n==1);});
 Check("solver exception propagates without publishing",()=>{var c=new List<Stack>();try {FlourPolicy.TryChoose(new List<Stack>{S("VCE_Flour")},x=>x.Kind,(a,b)=>{b.Add(a[0]);throw new InvalidOperationException();},c);throw new Exception("exception swallowed");}catch(InvalidOperationException){Assert(c.Count==0);}});
 Check("exact recipe scope",()=>{Assert(FlourPolicy.IsTarget("VCE_CookBakeFine"));Assert(!FlourPolicy.IsTarget("VCE_CookBakeThirdParty"));Assert(!FlourPolicy.IsTarget("CookMealSimple"));Assert(!FlourPolicy.IsTarget(null));});
+Check("migration only adds flours to bills that allow wheat",()=>{
+ Assert(FlourPolicy.NeedsAddedFlours(true,new[]{false,false}));Assert(FlourPolicy.NeedsAddedFlours(true,new[]{true,false}));
+ Assert(!FlourPolicy.NeedsAddedFlours(true,new[]{true,true}));Assert(!FlourPolicy.NeedsAddedFlours(false,new[]{false,false}));});
+Check("flour slot diagnostics",()=>{Assert(FlourPolicy.SlotProblem(true,1)==null);Assert(FlourPolicy.SlotProblem(false,0)=="recipe not found");
+ Assert(FlourPolicy.SlotProblem(true,0).Contains("no ingredient slot"));Assert(FlourPolicy.SlotProblem(true,2).StartsWith("2 "));});
+Check("target list matches the seven VCE recipes",()=>{Assert(FlourPolicy.TargetRecipes.Length==7&&FlourPolicy.TargetRecipes.Distinct().Count()==7&&FlourPolicy.TargetRecipes.All(FlourPolicy.IsTarget));});
 Console.WriteLine($"{passed} policy tests passed; game solver itself is NOT tested here.");
 record Stack(string Kind,int Count);

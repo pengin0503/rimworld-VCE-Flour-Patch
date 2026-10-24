@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- Label of the flour slot in VCE's bake recipes, set on the slot that accepts wheat flour. -->
+  <PFA_GrainFlourSlot>grain flour</PFA_GrainFlourSlot>
+  <!-- {0}: number of existing bake bills that allow wheat flour but not both added flours. -->
+  <PFA_MigrateBillsTitle>VCE Flour Alternatives</PFA_MigrateBillsTitle>
+  <PFA_MigrateBillsText>{0} baking bill(s) were made before this mod and allow wheat flour only.\n\nAlso allow rice flour and cornmeal in those bills? Bills where wheat flour is not allowed are left unchanged. You can change each bill's ingredients later.</PFA_MigrateBillsText>
+  <PFA_MigrateBillsConfirm>Allow</PFA_MigrateBillsConfirm>
+  <PFA_MigrateBillsSkip>Keep as is</PFA_MigrateBillsSkip>
+  <PFA_MigrateBillsDone>Rice flour and cornmeal are now allowed in {0} baking bill(s).</PFA_MigrateBillsDone>
+</LanguageData>
