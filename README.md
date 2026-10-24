@@ -2,7 +2,7 @@
 
 Vanilla Cooking Expanded（VCE）の既存の焼き料理に、**米粉とトウモロコシ粉を小麦粉の代替として追加**するMODです。専用料理や製粉設備は追加しません。
 
-**状態：開発版。1.6/1.7用DLLのビルドと自動テストは実施済みですが、RimWorld実ゲームでの検証は未完了です。完成版Releaseはまだありません。**
+**状態：開発版。1.6/1.7用DLLのビルドと自動テストは実施済みですが、RimWorld実ゲームでの検証は未完了です。[初回ベータ版 v0.1.0-beta.1](https://github.com/pengin0503/rimworld-VCE-Flour-Patch/releases/tag/v0.1.0-beta.1)をプレリリースとして配布します。**
 
 ## 機能
 
@@ -41,7 +41,7 @@ RimWorld **1.6 / 1.7を対象**に個別ビルドします。実機での対応�
 
 ## 入手・インストール
 
-完成版は検証後に[Releases](https://github.com/pengin0503/rimworld-VCE-Flour-Patch/releases)から配布します。現在は完成版を公開していません。
+[ベータ版 v0.1.0-beta.1](https://github.com/pengin0503/rimworld-VCE-Flour-Patch/releases/tag/v0.1.0-beta.1) のAssetsから `VCE-Flour-Alternatives-0.1.0-beta.1.zip` を入手できます。実ゲーム未検証のプレリリースであり、完成版ではありません。
 
 開発版を検証する場合は、[Actions](https://github.com/pengin0503/rimworld-VCE-Flour-Patch/actions/workflows/verify.yml)の成功した実行から `VCE-Flour-Alternatives-development` artifactを取得してください。中の `VCE-Flour-Alternatives-dev.zip` がMOD本体、`build-manifest.json` がビルド情報です。GitHubへのログインが必要な場合があります。
 
