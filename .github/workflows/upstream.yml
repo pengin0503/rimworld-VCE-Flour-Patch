@@ -1,0 +1,28 @@
+# Weekly check of this mod's assumptions against the current Vanilla Cooking Expanded definitions:
+# the static XML tests run against VCE's latest Recipes_Bakes.xml and Items_RawPlant.xml instead of
+# the pinned snapshot in tests/fixtures. A failure means VCE changed something this patch relies on.
+name: Check upstream VCE
+on:
+  schedule:
+    - cron: '17 3 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  upstream:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements-test.txt
+      - name: Replace fixtures with VCE's current definitions
+        run: |
+          base=https://raw.githubusercontent.com/Vanilla-Expanded/VanillaCookingExpanded/main/1.6/Defs
+          curl -fsSL "$base/RecipeDefs/Recipes_Bakes.xml" -o tests/fixtures/Recipes_Bakes.xml
+          curl -fsSL "$base/ThingDefs_Items/Items_RawPlant.xml" -o tests/fixtures/Items_RawPlant.xml
+          git diff --stat -- tests/fixtures
+      - name: Static tests against upstream
+        run: python -m unittest discover -s tests -v

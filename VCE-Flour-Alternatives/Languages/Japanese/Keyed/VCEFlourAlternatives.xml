@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <PFA_GrainFlourSlot>穀物粉</PFA_GrainFlourSlot>
+  <PFA_MigrateBillsTitle>VCE小麦粉代替パッチ</PFA_MigrateBillsTitle>
+  <PFA_MigrateBillsText>当MODの導入前に作られ、小麦粉だけを許可している焼き料理の製造指示が{0}件あります。\n\nこれらの指示で米粉・トウモロコシ粉も許可しますか？小麦粉を許可していない指示は変更しません。各指示の材料設定は後から変更できます。</PFA_MigrateBillsText>
+  <PFA_MigrateBillsConfirm>許可する</PFA_MigrateBillsConfirm>
+  <PFA_MigrateBillsSkip>そのままにする</PFA_MigrateBillsSkip>
+  <PFA_MigrateBillsDone>{0}件の焼き料理の製造指示で、米粉・トウモロコシ粉を許可しました。</PFA_MigrateBillsDone>
+</LanguageData>

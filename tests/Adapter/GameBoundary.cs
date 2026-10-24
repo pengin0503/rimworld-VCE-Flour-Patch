@@ -11,7 +11,11 @@ namespace Verse {
  public class ThingFilter {public HashSet<SpecialThingFilterDef> DisallowedSpecialFilters=new();public void SetAllow(SpecialThingFilterDef d,bool allow){if(allow)DisallowedSpecialFilters.Remove(d);else DisallowedSpecialFilters.Add(d);}public HashSet<ThingDef> Allowed=new();public string customSummary;public bool Allows(ThingDef d)=>Allowed.Contains(d);public void SetAllow(ThingDef d,bool allow){if(allow)Allowed.Add(d);else Allowed.Remove(d);}}
  public class RecipeDef {public string defName;public bool allowMixingIngredients=true;public List<IngredientCount> ingredients=new(){new()};public ThingFilter fixedIngredientFilter=new();public ThingFilter defaultIngredientFilter=new();}
  public static class DefDatabase<T> where T:class {public static List<T> AllDefsListForReading=new();public static T GetNamedSilentFail(string name)=>AllDefsListForReading.FirstOrDefault(x=>(string)x.GetType().GetField("defName").GetValue(x)==name);}
- public static class Log {public static void Error(string s)=>Console.WriteLine(s); public static void Message(string s)=>Console.WriteLine(s);}
+ public static class Log {public static void Error(string s)=>Console.WriteLine(s); public static void Message(string s)=>Console.WriteLine(s); public static List<string> Warnings=new(); public static void Warning(string s){Warnings.Add(s);Console.WriteLine(s);}}
+ public struct TaggedString {public string RawText; public static implicit operator string(TaggedString t)=>t.RawText;}
+ public class LoadedLanguage {public Dictionary<string,string> Keyed=new();}
+ public static class LanguageDatabase {public static LoadedLanguage activeLanguage;}
+ public static class Translator {public static bool TryTranslate(this string key,out TaggedString result){result=new TaggedString{RawText=key};if(LanguageDatabase.activeLanguage==null||!LanguageDatabase.activeLanguage.Keyed.TryGetValue(key,out var text))return false;result=new TaggedString{RawText=text};return true;}}
 }
 namespace RimWorld {
  using Verse;

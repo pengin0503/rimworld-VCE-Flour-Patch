@@ -2,8 +2,27 @@
 <Patch>
   <Operation Class="PatchOperationSequence">
     <operations>
+      <!-- fixedIngredientFilter: exactly one of the next three matches each recipe, so the recipe keeps a single
+           fixedIngredientFilter even if VCE starts writing its own. -->
       <li Class="PatchOperationAdd">
-        <xpath>Defs/RecipeDef[defName="VCE_CookBakeSimple" or defName="VCE_CookBakeSimpleBulk" or defName="VCE_CookBakeFine" or defName="VCE_CookBakeFineBulk" or defName="VCE_CookBakeLavish" or defName="VCE_CookBakeLavishBulk" or defName="VCE_CookBakeGourmet"]</xpath>
+        <success>Always</success>
+        <xpath>Defs/RecipeDef[defName="VCE_CookBakeSimple" or defName="VCE_CookBakeSimpleBulk" or defName="VCE_CookBakeFine" or defName="VCE_CookBakeFineBulk" or defName="VCE_CookBakeLavish" or defName="VCE_CookBakeLavishBulk" or defName="VCE_CookBakeGourmet"]/fixedIngredientFilter/categories</xpath>
+        <value>
+          <li>PFA_GrainFlour</li>
+        </value>
+      </li>
+      <li Class="PatchOperationAdd">
+        <success>Always</success>
+        <xpath>Defs/RecipeDef[defName="VCE_CookBakeSimple" or defName="VCE_CookBakeSimpleBulk" or defName="VCE_CookBakeFine" or defName="VCE_CookBakeFineBulk" or defName="VCE_CookBakeLavish" or defName="VCE_CookBakeLavishBulk" or defName="VCE_CookBakeGourmet"]/fixedIngredientFilter[not(categories)]</xpath>
+        <value>
+          <categories>
+            <li>PFA_GrainFlour</li>
+          </categories>
+        </value>
+      </li>
+      <li Class="PatchOperationAdd">
+        <success>Always</success>
+        <xpath>Defs/RecipeDef[defName="VCE_CookBakeSimple" or defName="VCE_CookBakeSimpleBulk" or defName="VCE_CookBakeFine" or defName="VCE_CookBakeFineBulk" or defName="VCE_CookBakeLavish" or defName="VCE_CookBakeLavishBulk" or defName="VCE_CookBakeGourmet"][not(fixedIngredientFilter)]</xpath>
         <value>
           <fixedIngredientFilter>
             <categories>
@@ -12,8 +31,27 @@
           </fixedIngredientFilter>
         </value>
       </li>
+      <!-- defaultIngredientFilter: exactly one of the next three matches each recipe, so the recipe keeps a single
+           defaultIngredientFilter even if VCE starts writing its own. -->
       <li Class="PatchOperationAdd">
-        <xpath>Defs/RecipeDef[defName="VCE_CookBakeSimple" or defName="VCE_CookBakeSimpleBulk" or defName="VCE_CookBakeFine" or defName="VCE_CookBakeFineBulk" or defName="VCE_CookBakeLavish" or defName="VCE_CookBakeLavishBulk" or defName="VCE_CookBakeGourmet"]</xpath>
+        <success>Always</success>
+        <xpath>Defs/RecipeDef[defName="VCE_CookBakeSimple" or defName="VCE_CookBakeSimpleBulk" or defName="VCE_CookBakeFine" or defName="VCE_CookBakeFineBulk" or defName="VCE_CookBakeLavish" or defName="VCE_CookBakeLavishBulk" or defName="VCE_CookBakeGourmet"]/defaultIngredientFilter/categories</xpath>
+        <value>
+          <li>PFA_GrainFlour</li>
+        </value>
+      </li>
+      <li Class="PatchOperationAdd">
+        <success>Always</success>
+        <xpath>Defs/RecipeDef[defName="VCE_CookBakeSimple" or defName="VCE_CookBakeSimpleBulk" or defName="VCE_CookBakeFine" or defName="VCE_CookBakeFineBulk" or defName="VCE_CookBakeLavish" or defName="VCE_CookBakeLavishBulk" or defName="VCE_CookBakeGourmet"]/defaultIngredientFilter[not(categories)]</xpath>
+        <value>
+          <categories>
+            <li>PFA_GrainFlour</li>
+          </categories>
+        </value>
+      </li>
+      <li Class="PatchOperationAdd">
+        <success>Always</success>
+        <xpath>Defs/RecipeDef[defName="VCE_CookBakeSimple" or defName="VCE_CookBakeSimpleBulk" or defName="VCE_CookBakeFine" or defName="VCE_CookBakeFineBulk" or defName="VCE_CookBakeLavish" or defName="VCE_CookBakeLavishBulk" or defName="VCE_CookBakeGourmet"][not(defaultIngredientFilter)]</xpath>
         <value>
           <defaultIngredientFilter>
             <categories>
@@ -22,6 +60,7 @@
           </defaultIngredientFilter>
         </value>
       </li>
+      <!-- The flour slot must exist: these two fail loudly when VCE changes the slot. -->
       <li Class="PatchOperationAdd">
         <xpath>Defs/RecipeDef[defName="VCE_CookBakeSimple" or defName="VCE_CookBakeSimpleBulk" or defName="VCE_CookBakeFine" or defName="VCE_CookBakeFineBulk" or defName="VCE_CookBakeLavish" or defName="VCE_CookBakeLavishBulk" or defName="VCE_CookBakeGourmet"]/ingredients/li/filter[thingDefs/li="VCE_Flour"]</xpath>
         <value>

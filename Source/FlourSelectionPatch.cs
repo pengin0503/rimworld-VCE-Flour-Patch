@@ -64,6 +64,36 @@ namespace VCEFlourAlternatives
                 foreach (RecipeDef recipe in DefDatabase<RecipeDef>.AllDefsListForReading)
                     if (FlourPolicy.IsTarget(recipe.defName))
                         recipe.fixedIngredientFilter?.SetAllow(plantFood, true);
+            LabelFlourSlots();
+            Installed = true;
+        }
+
+        /// <summary>True once the solver patch is active; existing bills are only migrated then.</summary>
+        internal static bool Installed { get; private set; }
+
+        // The slot label is a Keyed translation applied to whichever slot accepts wheat flour, so a
+        // reordered VCE ingredient list cannot move it to another slot. The XML patch's English label
+        // stays when the active language has no entry. Also reports recipes VCE no longer shapes as expected.
+        private static void LabelFlourSlots()
+        {
+            TaggedString label = default(TaggedString);
+            bool translated = LanguageDatabase.activeLanguage != null && "PFA_GrainFlourSlot".TryTranslate(out label);
+            foreach (string name in FlourPolicy.TargetRecipes)
+            {
+                RecipeDef recipe = DefDatabase<RecipeDef>.GetNamedSilentFail(name);
+                int slots = 0;
+                if (recipe?.ingredients != null)
+                    foreach (IngredientCount ingredient in recipe.ingredients)
+                        if (ingredient.filter.Allows(wheatFlour))
+                        {
+                            slots++;
+                            if (translated) ingredient.filter.customSummary = label;
+                        }
+                string problem = FlourPolicy.SlotProblem(recipe != null, slots);
+                if (problem != null)
+                    Log.Warning("[VCE Flour Alternatives] " + name + ": " + problem
+                        + ". Vanilla Cooking Expanded may have changed; this recipe may not offer the alternate flours.");
+            }
         }
 
         // Defs are resolved before StaticConstructorOnStartup. Only the flour slots lose the
