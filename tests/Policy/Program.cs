@@ -5,12 +5,14 @@ int passed=0;
 void Check(string name, Action test) { test(); passed++; Console.WriteLine("PASS "+name); }
 void Assert(bool value) { if(!value) throw new Exception("Assertion failed"); }
 Stack S(string kind,int count=10)=>new(kind,count);
+// The adapter derives flour kinds from the recipe's flour slot; this stands in for that slot.
+bool IsFlour(string kind)=>kind is "VCE_Flour" or "PFA_RiceFlour" or "PFA_Cornmeal";
 bool Choose(List<Stack> input, List<Stack> chosen, int need=10, string forbidden=null, int meat=0) =>
- FlourPolicy.TryChoose(input, x=>FlourPolicy.IsFlour(x.Kind)?x.Kind:null, (items,result)=> {
+ FlourPolicy.TryChoose(input, x=>IsFlour(x.Kind)?x.Kind:null, (items,result)=> {
   // Boundary double for the unavailable game solver: actual policy controls its inputs.
-  var flour=items.Where(x=>FlourPolicy.IsFlour(x.Kind)&&x.Kind!=forbidden).ToList();
+  var flour=items.Where(x=>IsFlour(x.Kind)&&x.Kind!=forbidden).ToList();
   if(flour.Sum(x=>x.Count)<need || items.Where(x=>x.Kind.StartsWith("meat")).Sum(x=>x.Count)<meat) return false;
-  result.AddRange(flour);result.AddRange(items.Where(x=>!FlourPolicy.IsFlour(x.Kind)));return true;
+  result.AddRange(flour);result.AddRange(items.Where(x=>!IsFlour(x.Kind)));return true;
  },chosen);
 foreach(var kind in new[]{"VCE_Flour","PFA_RiceFlour","PFA_Cornmeal"})
  Check("single "+kind,()=>{var c=new List<Stack>();Assert(Choose(new(){S(kind)},c)&&c.Single().Kind==kind);});

@@ -17,11 +17,11 @@ def main():
     run(sys.executable,'-m','unittest','discover','-s','tests','-v')
     run(DOTNET,'run','--project','tests/Policy','-p:NuGetAudit=false')
     run(DOTNET,'run','--project','tests/Adapter')
-    for scenario in ['--missing-def','--injected-flour','--clone-prefix']:
+    for scenario in ['--missing-def','--missing-wheat','--injected-flour','--clone-prefix']:
         run(DOTNET,'run','--project','tests/Adapter','--no-build','--',scenario)
     run(DOTNET,'build','tests/Metadata','-c','Release')
     evidence=[]
-    for version,tfm,reference in [('1.6','net472','1.6.4871'),('1.7','net10.0','1.7.4985-unstable')]:
+    for version,tfm,reference in [('1.6','net472','1.6.4871'),('1.7','net10.0','1.7.4977-alpha.1')]:
         run(DOTNET,'build','Source','-c','Release',f'-p:RimWorldVersion={version}','-warnaserror')
         assets=json.loads((ROOT/'Source/obj/project.assets.json').read_text())
         folder=next(iter(assets['packageFolders']))
@@ -29,6 +29,14 @@ def main():
         dll=ROOT/'Source/bin/Release'/tfm/'VCEFlourAlternatives.dll'
         run(DOTNET,'run','--project','tests/Metadata','-c','Release','--no-build','--',game,dll,version)
         evidence.append({'game':reference,'target':tfm,'sha256':hashlib.sha256(dll.read_bytes()).hexdigest()})
+    managed=os.environ.get('RIMWORLD_17_MANAGED_DIR')
+    if managed:
+        harmony=os.environ.get('RIMWORLD_17_HARMONY',str(Path(managed)/'0Harmony.dll'))
+        run(DOTNET,'run','--project','tests/GameRuntime','-c','Release',f'-p:RimWorldManagedDir={managed}',
+            f'-p:HarmonyAssemblyPath={harmony}','--',ROOT/'Source/bin/Release/net10.0/VCEFlourAlternatives.dll',
+            ROOT/'tests/fixtures/Recipes_Bakes.xml',ROOT/'VCE-Flour-Alternatives/Patches/VCE_FlourAlternatives.xml')
+    else:
+        print('SKIPPED game-runtime checks: set RIMWORLD_17_MANAGED_DIR to your RimWorld 1.7 assemblies.',flush=True)
     run(sys.executable,'tools/package_mod.py')
     archive=ROOT/'artifacts/VCE-Flour-Alternatives-dev.zip'
     manifest={'builds':evidence,'zip_sha256':hashlib.sha256(archive.read_bytes()).hexdigest(),

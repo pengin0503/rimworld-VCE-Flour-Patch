@@ -31,6 +31,13 @@
           <li>PFA_Cornmeal</li>
         </value>
       </li>
+      <!-- Several allowed defs make the slot summary fall back to "ingredients"; name it explicitly. -->
+      <li Class="PatchOperationAdd">
+        <xpath>Defs/RecipeDef[defName="VCE_CookBakeSimple" or defName="VCE_CookBakeSimpleBulk" or defName="VCE_CookBakeFine" or defName="VCE_CookBakeFineBulk" or defName="VCE_CookBakeLavish" or defName="VCE_CookBakeLavishBulk" or defName="VCE_CookBakeGourmet"]/ingredients/li/filter[thingDefs/li="VCE_Flour"]</xpath>
+        <value>
+          <customSummary>grain flour</customSummary>
+        </value>
+      </li>
     </operations>
   </Operation>
 </Patch>

@@ -32,3 +32,13 @@ Cost: no claim that arbitrary external replacements of the native no-mix solver 
 Ruling: Public development CI artifact, no completed Release until mandatory game checks pass; lack of game executable is the remaining blocker.
 Automated evidence: 15 Python checks + 15 policy checks + 9 Harmony boundary scenarios + two metadata checks, both target DLLs warning/error-free.
 No deferred minor code issues were identified. Runtime verification omissions are explicit release blockers, not minor findings.
+
+2026-10-24 review follow-up (user-supplied RimWorld 1.7.9787.38423 assemblies, Harmony 3.0.0-rc.3, Workshop VCE).
+Ruling (user): flour slot shows "grain flour"/穀物粉 via customSummary; README states existing bills always need manual allowance.
+Ruling (user): fail-closed keeps fixed/default filters; Bill.ExposeData strips allowances outside fixedIngredientFilter on save.
+Ruling (user): flour kinds = defs allowed by the slot that accepts VCE_Flour, not a defName list. Textures prefixed VCE_FPatch_.
+Ruling (user): verify.yml '**.md' trigger left as is.
+Finding: 1.7.4985-unstable reference requests Assembly-CSharp 1.7.9790; LoadFrom on 1.7.9787 fails (.NET does not bind a lower version).
+Ruling: build 1.7 against oldest RimRef 1.7.4977-alpha.1 (1.7.9782); Metadata and GameRuntime checks guard the reference version.
+Added opt-in tests/GameRuntime (RIMWORLD_17_MANAGED_DIR): real solver, PatchOperationAdd, XmlInheritance on the built DLL; 33 checks pass on 1.7.9787.
+Reason: CI cannot run game assemblies; this caught the version-binding failure that reference-only checks missed.

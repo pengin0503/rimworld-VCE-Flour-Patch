@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <!-- Flour slot label of VCE's bake recipes. The index is the flour slot's position in each recipe's ingredients. -->
+  <VCE_CookBakeSimple.ingredients.0.filter.customSummary>穀物粉</VCE_CookBakeSimple.ingredients.0.filter.customSummary>
+  <VCE_CookBakeSimpleBulk.ingredients.0.filter.customSummary>穀物粉</VCE_CookBakeSimpleBulk.ingredients.0.filter.customSummary>
+  <VCE_CookBakeFine.ingredients.2.filter.customSummary>穀物粉</VCE_CookBakeFine.ingredients.2.filter.customSummary>
+  <VCE_CookBakeFineBulk.ingredients.2.filter.customSummary>穀物粉</VCE_CookBakeFineBulk.ingredients.2.filter.customSummary>
+  <VCE_CookBakeLavish.ingredients.2.filter.customSummary>穀物粉</VCE_CookBakeLavish.ingredients.2.filter.customSummary>
+  <VCE_CookBakeLavishBulk.ingredients.2.filter.customSummary>穀物粉</VCE_CookBakeLavishBulk.ingredients.2.filter.customSummary>
+  <VCE_CookBakeGourmet.ingredients.3.filter.customSummary>穀物粉</VCE_CookBakeGourmet.ingredients.3.filter.customSummary>
+</LanguageData>
