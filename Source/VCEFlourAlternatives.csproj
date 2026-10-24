@@ -4,7 +4,7 @@
     <TargetFramework Condition="'$(RimWorldVersion)' == '1.6'">net472</TargetFramework>
     <TargetFramework Condition="'$(RimWorldVersion)' == '1.7'">net10.0</TargetFramework>
     <RimRefVersion Condition="'$(RimWorldVersion)' == '1.6'">1.6.4871</RimRefVersion>
-    <RimRefVersion Condition="'$(RimWorldVersion)' == '1.7'">1.7.4985-unstable</RimRefVersion>
+    <RimRefVersion Condition="'$(RimWorldVersion)' == '1.7'">1.7.4977-alpha.1</RimRefVersion>
     <HarmonyVersion Condition="'$(RimWorldVersion)' == '1.6'">2.4.3</HarmonyVersion>
     <HarmonyVersion Condition="'$(RimWorldVersion)' == '1.7'">3.0.0-rc.3</HarmonyVersion>
     <Nullable>disable</Nullable><ImplicitUsings>disable</ImplicitUsings><LangVersion>7.3</LangVersion>

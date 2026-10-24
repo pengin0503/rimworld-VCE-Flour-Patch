@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+ <!-- Local-only: needs the player's own RimWorld 1.7 assemblies (never committed or packaged). -->
+ <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable><NuGetAudit>false</NuGetAudit><NoWarn>MSB3277</NoWarn></PropertyGroup>
+ <ItemGroup>
+  <Reference Include="$(RimWorldManagedDir)/*.dll" Exclude="$(RimWorldManagedDir)/netstandard.dll;$(RimWorldManagedDir)/mscorlib.dll;$(RimWorldManagedDir)/System*.dll;$(RimWorldManagedDir)/Microsoft*.dll;$(RimWorldManagedDir)/0Harmony.dll" />
+  <Reference Include="0Harmony"><HintPath>$(HarmonyAssemblyPath)</HintPath></Reference>
+ </ItemGroup>
+ <Target Name="ValidateInputs" BeforeTargets="PrepareForBuild">
+  <Error Condition="!Exists('$(RimWorldManagedDir)/Assembly-CSharp.dll')" Text="RimWorldManagedDir must contain the RimWorld 1.7 Assembly-CSharp.dll" />
+  <Error Condition="!Exists('$(HarmonyAssemblyPath)')" Text="HarmonyAssemblyPath must point to Harmony 3's 0Harmony.dll" />
+ </Target>
+</Project>

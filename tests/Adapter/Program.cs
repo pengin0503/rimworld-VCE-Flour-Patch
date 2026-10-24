@@ -6,15 +6,30 @@ using System.Runtime.CompilerServices;
 
 var wheat=new ThingDef{defName="VCE_Flour"};var rice=new ThingDef{defName="PFA_RiceFlour"};var corn=new ThingDef{defName="PFA_Cornmeal"};
 DefDatabase<ThingDef>.AllDefsListForReading.AddRange(new[]{wheat,rice,corn});
-var recipe=new RecipeDef{defName="VCE_CookBakeFine"};
+var meat=new ThingDef{defName="Meat_Test"};var thirdParty=new ThingDef{defName="RC2_Flour"};
+DefDatabase<ThingDef>.AllDefsListForReading.AddRange(new[]{meat,thirdParty});
+// A non-flour slot comes first so the adapter has to locate the flour slot itself.
+var recipe=new RecipeDef{defName="VCE_CookBakeFine",ingredients=new(){new(),new()}};
 DefDatabase<RecipeDef>.AllDefsListForReading.Add(recipe);
-foreach(var d in new[]{wheat,rice,corn}){recipe.ingredients[0].filter.SetAllow(d,true);recipe.fixedIngredientFilter.SetAllow(d,true);recipe.defaultIngredientFilter.SetAllow(d,true);}
+var other=recipe.ingredients[0];var flourSlot=recipe.ingredients[1];
+other.filter.SetAllow(meat,true);flourSlot.filter.customSummary="grain flour";
+foreach(var d in new[]{wheat,rice,corn}){flourSlot.filter.SetAllow(d,true);recipe.fixedIngredientFilter.SetAllow(d,true);recipe.defaultIngredientFilter.SetAllow(d,true);}
 void Assert(bool b){if(!b)throw new Exception("Adapter assertion failed");}
 if(args.Contains("--missing-def")) {
+ DefDatabase<ThingDef>.AllDefsListForReading.Remove(rice);
+ RuntimeHelpers.RunClassConstructor(typeof(Bootstrap).TypeHandle);
+ Assert(Harmony.GetPatchInfo(FlourSelectionPatch.ResolveTarget())==null);
+ // Rice's def is the injected failure, so only cornmeal can be looked up and removed.
+ Assert(flourSlot.filter.Allowed.Contains(wheat)&&!flourSlot.filter.Allowed.Contains(corn)&&flourSlot.filter.customSummary==null&&other.filter.Allowed.SetEquals(new[]{meat}));
+ // fixed/default filters keep the added flours so saving bills cannot strip the player's allowances.
+ Assert(recipe.fixedIngredientFilter.Allowed.Contains(corn)&&recipe.defaultIngredientFilter.Allowed.Contains(corn));
+ Console.WriteLine("PASS fail-closed initialization keeps wheat and saved allowances");return;
+}
+if(args.Contains("--missing-wheat")) {
  DefDatabase<ThingDef>.AllDefsListForReading.Remove(wheat);
  RuntimeHelpers.RunClassConstructor(typeof(Bootstrap).TypeHandle);
- Assert(!recipe.ingredients[0].filter.Allowed.Contains(rice)&&!recipe.fixedIngredientFilter.Allowed.Contains(corn));
- Console.WriteLine("PASS fail-closed initialization");return;
+ Assert(!flourSlot.filter.Allowed.Contains(rice)&&!flourSlot.filter.Allowed.Contains(corn)&&recipe.fixedIngredientFilter.Allowed.Contains(corn));
+ Console.WriteLine("PASS fail-closed initialization without wheat flour clears added flours from all slots");return;
 }
 RuntimeHelpers.RunClassConstructor(typeof(Bootstrap).TypeHandle);
 Assert(Harmony.GetPatchInfo(FlourSelectionPatch.ResolveTarget()).Owners.Contains(Bootstrap.HarmonyId));
@@ -38,7 +53,13 @@ recipe.defName="OtherBake";Assert(Run(T(wheat,5),T(rice,5)));recipe.defName="VCE
 recipe.allowMixingIngredients=false;Assert(Run(T(wheat,5),T(rice,5)));recipe.allowMixingIngredients=true;Console.WriteLine("PASS adapter leaves no-mix recipes to native dispatch");
 WorkGiver_DoBill.Throw=true;try{Run(T(wheat,10));throw new Exception("swallowed");}catch(InvalidOperationException){}finally{WorkGiver_DoBill.Throw=false;}
 Assert(!Run(T(wheat,5),T(rice,5)));Console.WriteLine("PASS exception guard restoration");
-Console.WriteLine("6 adapter scenarios passed using real Harmony 3 and a boundary double, NOT RimWorld runtime.");
+flourSlot.filter.SetAllow(thirdParty,true);
+Assert(!Run(T(wheat,5),T(thirdParty,5))&&chosen.Count==0);
+Assert(Run(T(thirdParty,4),T(thirdParty,6))&&chosen.All(c=>c.Thing.def==thirdParty));
+flourSlot.filter.SetAllow(thirdParty,false);Console.WriteLine("PASS flour added to the slot by another mod is its own kind");
+flourSlot.filter.SetAllow(wheat,false);Assert(Run(T(rice,5),T(corn,5)));flourSlot.filter.SetAllow(wheat,true);
+Console.WriteLine("PASS recipe without a wheat flour slot is left to the original solver");
+Console.WriteLine("8 adapter scenarios passed using real Harmony 3 and a boundary double, NOT RimWorld runtime.");
 
 static class ClonePrefix {
  public static int Calls;

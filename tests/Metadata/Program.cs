@@ -15,4 +15,8 @@ string framework=(string)mod.Assembly.CustomAttributes.Single(a=>a.AttributeType
 if(framework!=(args[2]=="1.6"?".NETFramework,Version=v4.7.2":".NETCoreApp,Version=v10.0"))throw new Exception("Wrong target framework");
 if(mod.Assembly.CustomAttributes.Any(a=>a.AttributeType.Name=="ReferenceAssemblyAttribute"))throw new Exception("Reference assembly cannot be distributed");
 if(!mod.Types.Any(t=>t.FullName=="VCEFlourAlternatives.FlourSelectionPatch"))throw new Exception("Missing patch type");
-Console.WriteLine($"PASS {args[2]}: exact solver signature, Harmony {major}, {framework}, executable mod assembly");
+// .NET binds a referenced assembly only when the available version is not lower than requested,
+// so the mod must reference a game assembly no newer than the oldest build it should load on.
+var gameReference=mod.AssemblyReferences.Single(r=>r.Name=="Assembly-CSharp").Version;
+if(gameReference>game.Assembly.Name.Version)throw new Exception($"Mod references Assembly-CSharp {gameReference}, newer than {game.Assembly.Name.Version}");
+Console.WriteLine($"PASS {args[2]}: exact solver signature, Harmony {major}, {framework}, Assembly-CSharp reference {gameReference}, executable mod assembly");

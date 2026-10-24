@@ -6,10 +6,9 @@ namespace VCEFlourAlternatives
     // No game-specific quantity math: the supplied solver remains authoritative.
     internal static class FlourPolicy
     {
-        internal static bool IsFlour(string name)
-        {
-            return name == "VCE_Flour" || name == "PFA_RiceFlour" || name == "PFA_Cornmeal";
-        }
+        internal const string WheatFlour = "VCE_Flour";
+
+        internal static readonly string[] AddedFlours = { "PFA_RiceFlour", "PFA_Cornmeal" };
 
         internal static bool IsTarget(string name)
         {

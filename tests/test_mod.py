@@ -21,7 +21,7 @@ def fixture():
 
 def run_add_patch(root,patchroot):
     ops=patchroot.xpath('//Operation[@Class="PatchOperationSequence"]/operations/li[@Class="PatchOperationAdd"]')
-    assert len(ops)==3, f'Expected 3 patch operations, found {len(ops)}'
+    assert len(ops)==4, f'Expected 4 patch operations, found {len(ops)}'
     for op in ops:
         matches=etree.ElementTree(root).xpath("/" + op.findtext("xpath").lstrip("/"))
         assert matches, f'Unmatched XPath: {op.findtext("xpath")}'
@@ -40,7 +40,7 @@ class TestMod(unittest.TestCase):
         self.assertEqual(set(about.xpath('//supportedVersions/li/text()')), {'1.6','1.7'})
 
     def test_images(self):
-        for name in ('VCE_Rice_Flour.png','VCE_Cornmeal.png'):
+        for name in ('VCE_FPatch_Rice_Flour.png','VCE_FPatch_Cornmeal.png'):
             path=MOD/'Textures'/'Things'/'Items'/'Raw'/name
             with Image.open(path) as im:
                 self.assertEqual(im.size,(128,128))
@@ -49,7 +49,7 @@ class TestMod(unittest.TestCase):
 
     def test_ingredient_defs(self):
         defs=etree.parse(str(MOD/'Defs'/'ThingDefs'/'Flour.xml'))
-        for defname,src in [('PFA_RiceFlour','VCE_Rice_Flour'),('PFA_Cornmeal','VCE_Cornmeal')]:
+        for defname,src in [('PFA_RiceFlour','VCE_FPatch_Rice_Flour'),('PFA_Cornmeal','VCE_FPatch_Cornmeal')]:
             things=defs.xpath(f'/Defs/ThingDef[defName="{defname}"]')
             self.assertEqual(len(things),1)
             thing=things[0]
@@ -98,13 +98,35 @@ class TestMod(unittest.TestCase):
             self.assertEqual(rec.xpath('./ingredients/li/filter/thingDefs/li/text()'), ['VCE_Flour'])
             self.assertFalse(rec.xpath('./fixedIngredientFilter|./defaultIngredientFilter'))
 
+    def test_flour_slot_named_grain_flour(self):
+        recipes=fixture()
+        run_add_patch(recipes, etree.parse(str(MOD/'Patches/VCE_FlourAlternatives.xml')))
+        for name in RECIPE_NAMES:
+            rec=recipes.xpath(f'/Defs/RecipeDef[defName="{name}"]')[0]
+            for li in rec.xpath('./ingredients/li'):
+                expected=['grain flour'] if li.xpath('./filter/thingDefs/li[.="VCE_Flour"]') else []
+                self.assertEqual(li.xpath('./filter/customSummary/text()'), expected)
+        for name in ('OtherBake', 'VCE_CookBakeThirdParty'):
+            self.assertFalse(recipes.xpath(f'/Defs/RecipeDef[defName="{name}"]//customSummary'))
+
+    def test_japanese_flour_slot_paths_match_upstream_indices(self):
+        recipes=fixture()
+        expected={}
+        for name in RECIPE_NAMES:
+            slots=recipes.xpath(f'/Defs/RecipeDef[defName="{name}"]/ingredients/li')
+            index=[i for i,li in enumerate(slots) if li.xpath('./filter/thingDefs/li[.="VCE_Flour"]')]
+            self.assertEqual(len(index),1)
+            expected[f'{name}.ingredients.{index[0]}.filter.customSummary']='穀物粉'
+        injected=etree.parse(str(MOD/'Languages/Japanese/DefInjected/RecipeDef/VCE_Bakes.xml')).getroot()
+        self.assertEqual({e.tag:e.text for e in injected if isinstance(e.tag,str)}, expected)
+
     def test_upstream_costs_and_other_slots_unchanged(self):
         recipes=fixture()
         original=etree.tostring(recipes)
         run_add_patch(recipes, etree.parse(str(MOD/'Patches/VCE_FlourAlternatives.xml')))
         for node in recipes.xpath('//li[text()="PFA_RiceFlour" or text()="PFA_Cornmeal"]'):
             node.getparent().remove(node)
-        for node in list(recipes.xpath('/Defs/RecipeDef[defName]/*[self::fixedIngredientFilter or self::defaultIngredientFilter]')):
+        for node in list(recipes.xpath('/Defs/RecipeDef[defName]/*[self::fixedIngredientFilter or self::defaultIngredientFilter]|//filter/customSummary')):
             node.getparent().remove(node)
         # Added elements have formatting whitespace; compare normalized element trees.
         parser=etree.XMLParser(remove_blank_text=True)

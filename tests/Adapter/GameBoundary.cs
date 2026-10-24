@@ -7,7 +7,7 @@ namespace Verse {
  public struct ThingCount {public Thing Thing; public int Count;public ThingCount(Thing t,int n){Thing=t;Count=n;}}
  public struct IntVec3 {}
  public class IngredientCount {public ThingFilter filter=new();}
- public class ThingFilter {public HashSet<ThingDef> Allowed=new();public void SetAllow(ThingDef d,bool allow){if(allow)Allowed.Add(d);else Allowed.Remove(d);}}
+ public class ThingFilter {public HashSet<ThingDef> Allowed=new();public string customSummary;public bool Allows(ThingDef d)=>Allowed.Contains(d);public void SetAllow(ThingDef d,bool allow){if(allow)Allowed.Add(d);else Allowed.Remove(d);}}
  public class RecipeDef {public string defName;public bool allowMixingIngredients=true;public List<IngredientCount> ingredients=new(){new()};public ThingFilter fixedIngredientFilter=new();public ThingFilter defaultIngredientFilter=new();}
  public static class DefDatabase<T> where T:class {public static List<T> AllDefsListForReading=new();public static T GetNamedSilentFail(string name)=>AllDefsListForReading.FirstOrDefault(x=>(string)x.GetType().GetField("defName").GetValue(x)==name);}
  public static class Log {public static void Error(string s)=>Console.WriteLine(s); public static void Message(string s)=>Console.WriteLine(s);}
@@ -22,8 +22,8 @@ namespace RimWorld {
    Calls++; if(Throw)throw new InvalidOperationException("solver error");
    chosen.Clear();missingIngredients?.Clear();
    if(Inject!=null)availableThings.Add(Inject);
-   var flour=availableThings.Where(x=>VCEFlourAlternatives.FlourPolicy.IsFlour(x.def.defName)&&x.def.defName!=bill.Forbidden).ToList();
-   if(flour.Sum(x=>x.stackCount)<10){missingIngredients?.Add(bill.recipe.ingredients[0]);return false;}
+   var flour=availableThings.Where(x=>bill.recipe.ingredients[^1].filter.Allows(x.def)&&x.def.defName!=bill.Forbidden).ToList();
+   if(flour.Sum(x=>x.stackCount)<10){missingIngredients?.Add(bill.recipe.ingredients[^1]);return false;}
    chosen.AddRange(flour.Select(x=>new ThingCount(x,x.stackCount)));return true;
   }
  }
