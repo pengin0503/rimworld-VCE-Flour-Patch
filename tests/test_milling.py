@@ -5,10 +5,10 @@ import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parents[1]
 MOD = ROOT / 'VCE-Flour-Alternatives'
 EXPECTED = {
-    'PFA_MillRice': ('RawRice', 'PFA_RiceFlour', 20, 800, '2倍量'),
-    'PFA_MillRiceBulk': ('RawRice', 'PFA_RiceFlour', 80, 3200, '8倍量'),
-    'PFA_MillCorn': ('RawCorn', 'PFA_Cornmeal', 20, 800, '2倍量'),
-    'PFA_MillCornBulk': ('RawCorn', 'PFA_Cornmeal', 80, 3200, '8倍量'),
+    'PFA_MillRice': ('RawRice', 'PFA_RiceFlour', 20, 800, ' x2'),
+    'PFA_MillRiceBulk': ('RawRice', 'PFA_RiceFlour', 80, 3200, ' x8'),
+    'PFA_MillCorn': ('RawCorn', 'PFA_Cornmeal', 20, 800, ' x2'),
+    'PFA_MillCornBulk': ('RawCorn', 'PFA_Cornmeal', 80, 3200, ' x8'),
 }
 
 class MillingTests(unittest.TestCase):

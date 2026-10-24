@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
-  <PFA_MillRice.label>米粉を作る（2倍量）</PFA_MillRice.label>
+  <PFA_MillRice.label>米粉を作る x2</PFA_MillRice.label>
   <PFA_MillRice.description>米20個から米粉20個を作る。</PFA_MillRice.description>
   <PFA_MillRice.jobString>米を製粉しています。</PFA_MillRice.jobString>
-  <PFA_MillRiceBulk.label>米粉を作る（8倍量）</PFA_MillRiceBulk.label>
+  <PFA_MillRiceBulk.label>米粉を作る x8</PFA_MillRiceBulk.label>
   <PFA_MillRiceBulk.description>米80個から米粉80個を作る。</PFA_MillRiceBulk.description>
   <PFA_MillRiceBulk.jobString>米を製粉しています。</PFA_MillRiceBulk.jobString>
-  <PFA_MillCorn.label>トウモロコシ粉を作る（2倍量）</PFA_MillCorn.label>
+  <PFA_MillCorn.label>トウモロコシ粉を作る x2</PFA_MillCorn.label>
   <PFA_MillCorn.description>トウモロコシ20個からトウモロコシ粉20個を作る。</PFA_MillCorn.description>
   <PFA_MillCorn.jobString>トウモロコシを製粉しています。</PFA_MillCorn.jobString>
-  <PFA_MillCornBulk.label>トウモロコシ粉を作る（8倍量）</PFA_MillCornBulk.label>
+  <PFA_MillCornBulk.label>トウモロコシ粉を作る x8</PFA_MillCornBulk.label>
   <PFA_MillCornBulk.description>トウモロコシ80個からトウモロコシ粉80個を作る。</PFA_MillCornBulk.description>
   <PFA_MillCornBulk.jobString>トウモロコシを製粉しています。</PFA_MillCornBulk.jobString>
 </LanguageData>
