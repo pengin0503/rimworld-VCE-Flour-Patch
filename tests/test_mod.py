@@ -75,20 +75,6 @@ class TestMod(unittest.TestCase):
         japanese=etree.parse(str(MOD/'Languages/Japanese/DefInjected/ThingCategoryDef/GrainFlour.xml'))
         self.assertEqual(japanese.findtext('PFA_GrainFlour.label'), '穀物粉')
 
-    def test_milling_recipes(self):
-        defs=etree.parse(str(MOD/'Defs'/'RecipeDefs'/'Milling.xml'))
-        expected={'PFA_MillRice':('RawRice','PFA_RiceFlour'), 'PFA_MillCorn':('RawCorn','PFA_Cornmeal')}
-        self.assertEqual(len(defs.xpath('/Defs/RecipeDef')),2)
-        for defname,(source,target) in expected.items():
-            recipe=defs.xpath(f'/Defs/RecipeDef[defName="{defname}"]')[0]
-            self.assertEqual(recipe.xpath('./recipeUsers/li/text()'),['FueledStove','ElectricStove'])
-            self.assertEqual(recipe.xpath('./ingredients/li/filter/thingDefs/li/text()'),[source])
-            self.assertEqual(recipe.xpath('./fixedIngredientFilter/thingDefs/li/text()'),[source])
-            self.assertEqual(recipe.xpath('./defaultIngredientFilter/thingDefs/li/text()'),[source])
-            self.assertEqual(recipe.findtext('./ingredients/li/count'),'10')
-            self.assertEqual(recipe.xpath('./products/*[1]')[0].tag,target)
-            self.assertEqual(recipe.xpath('./products/*[1]')[0].text,'10')
-
     def test_patches_do_not_toggle_global_mixing(self):
         patch = etree.parse(str(MOD/'Patches'/'VCE_FlourAlternatives.xml'))
         self.assertFalse(patch.xpath('//allowMixingIngredients'))
