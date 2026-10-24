@@ -2,7 +2,7 @@
 
 Vanilla Cooking Expanded（VCE）の既存の焼き料理に、**米粉とトウモロコシ粉を小麦粉の代替として追加**するMODです。専用料理や製粉設備は追加しません。
 
-**状態：開発版。1.6/1.7用DLLのビルドと自動テストは実施済みですが、RimWorld実ゲームでの検証は未完了です。[修正版ベータ v0.1.0-beta.3](https://github.com/pengin0503/rimworld-VCE-Flour-Patch/releases/tag/v0.1.0-beta.3)をプレリリースとして配布します。**
+**状態：正式版 v0.1.0。ユーザーからゲーム内検証の成功報告を受け、正式版として公開します。1.6/1.7のビルドと自動テストも確認済みです。**
 
 ## 機能
 
@@ -30,7 +30,7 @@ VCE Bakeryなど別MODのレシピは対象外です。小麦粉を使う全レ�
 
 ## 必要MOD・対応バージョン
 
-RimWorld **1.6 / 1.7を対象**に個別ビルドします。実機での対応確認は保留中です。
+RimWorld **1.6 / 1.7を対象**に個別ビルドします。ユーザーの1.7環境でゲーム内検証の成功報告を受領しています。1.6の実機確認は個別の報告を受けていません。
 
 必要なものはHarmony、Vanilla Expanded Framework、Vanilla Cooking Expandedです。HarmonyはCoreより上、Framework→VCE→当MODの順に配置してください。
 
@@ -45,9 +45,9 @@ RimWorld **1.6 / 1.7を対象**に個別ビルドします。実機での対応�
 
 ## 入手・インストール
 
-[修正版ベータ v0.1.0-beta.3](https://github.com/pengin0503/rimworld-VCE-Flour-Patch/releases/tag/v0.1.0-beta.3) のAssetsから `VCE-Flour-Alternatives-0.1.0-beta.3.zip` を入手できます。実ゲーム未検証のプレリリースであり、完成版ではありません。
+[正式版 v0.1.0](https://github.com/pengin0503/rimworld-VCE-Flour-Patch/releases/tag/v0.1.0) のAssetsから `VCE-Flour-Alternatives-0.1.0.zip` を入手できます。
 
-**注意**：v0.1.0-beta.1の1.7用DLLは新しい参照（Assembly-CSharp 1.7.9790）でビルドしたため、それより前の1.7ビルドでは読み込めない可能性が高いです。読み込めないと粉の合算防止が働きません。修正版はmainの開発版（Actionsのartifact）を使ってください。
+**注意**：v0.1.0-beta.1の1.7用DLLは新しい参照（Assembly-CSharp 1.7.9790）でビルドしたため、それより前の1.7ビルドでは読み込めない可能性が高いです。読み込めないと粉の合算防止が働きません。修正を含む正式版 v0.1.0を使ってください。
 
 開発版を検証する場合は、[Actions](https://github.com/pengin0503/rimworld-VCE-Flour-Patch/actions/workflows/verify.yml)の成功した実行から `VCE-Flour-Alternatives-development` artifactを取得してください。中の `VCE-Flour-Alternatives-dev.zip` がMOD本体、`build-manifest.json` がビルド情報です。GitHubへのログインが必要な場合があります。
 
@@ -115,7 +115,7 @@ C#は `WorkGiver_DoBill.TryFindBestBillIngredientsInSet_AllowMix` の正確な5�
 - 1.6/1.7：警告・エラーなしでDLLビルド、APIシグネチャ／対象ランタイム／参照バージョン検査成功。
 - RimWorld 1.7.9787.38423の実アセンブリ（ローカル検査）：33項目成功。ゲームの材料選択処理、XMLパッチ適用・継承解決、DLLの読み込み可否、初期化失敗時の動作。
 - 今回の表示不具合：RimWorld 1.7.9790.38077の実アセンブリで修正前の非表示を再現し、修正後に3種類の粉が表示対象となることを確認。カテゴリー経由の追加粉の受け入れ・材料探索などを含む37項目成功（画面描画そのものは未確認）。
-- **未検証**：ゲーム起動、実際の材料探索・運搬・消費、製粉・料理、UIでの表示、日本語訳の適用、1.6全般（Harmony 2のゲーム内適用を含む）、VEFとの実動作、既存セーブ追加。
+- **ゲーム内検証**：2026-10-24、ユーザーから検証成功の報告を受領し、正式版の公開を決定。個別の試験項目・1.6実機の詳細記録は未受領です。
 
 詳細とリリース前の必須手順は [検証記録](docs/VALIDATION.md)、判断理由は [作業記録](docs/WORK_LOG.md) にあります。
 
