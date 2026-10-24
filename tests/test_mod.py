@@ -57,6 +57,23 @@ class TestMod(unittest.TestCase):
             self.assertEqual(thing.findtext('./graphicData/texPath'),f'Things/Items/Raw/{src}')
             self.assertEqual(thing.findtext('./statBases/Nutrition'),'0.05')
             self.assertEqual(thing.findtext('./comps/li/daysToRotStart'),'100')
+            self.assertEqual(thing.xpath('./thingCategories/li/text()'), ['PFA_GrainFlour'])
+
+    def test_grain_category_and_wheat_membership(self):
+        categories=etree.parse(str(MOD/'Defs/ThingCategoryDefs/GrainFlour.xml'))
+        grain=categories.xpath('/Defs/ThingCategoryDef[defName="PFA_GrainFlour"]')
+        self.assertEqual(len(grain), 1)
+        self.assertEqual(grain[0].findtext('parent'), 'PlantMatter')
+        wheat=etree.parse(str(ROOT/'tests/fixtures/Items_RawPlant.xml'))
+        op=etree.parse(str(MOD/'Patches/PFA_GrainFlour.xml')).getroot().find('Operation')
+        self.assertEqual(op.get('Class'), 'PatchOperationReplace')
+        matches=wheat.xpath('/'+op.findtext('xpath'))
+        self.assertEqual(len(matches), 1)
+        for match in matches:
+            match.getparent().replace(match, etree.fromstring(etree.tostring(op.find('value')[0])))
+        self.assertEqual(wheat.xpath('/Defs/ThingDef[defName="VCE_Flour"]/thingCategories/li/text()'), ['PFA_GrainFlour'])
+        japanese=etree.parse(str(MOD/'Languages/Japanese/DefInjected/ThingCategoryDef/GrainFlour.xml'))
+        self.assertEqual(japanese.findtext('PFA_GrainFlour.label'), '穀物粉')
 
     def test_milling_recipes(self):
         defs=etree.parse(str(MOD/'Defs'/'RecipeDefs'/'Milling.xml'))
@@ -90,9 +107,11 @@ class TestMod(unittest.TestCase):
         for name in RECIPE_NAMES:
             rec=recipes.xpath(f'/Defs/RecipeDef[defName="{name}"]')[0]
             node=rec.xpath('./ingredients/li/filter/thingDefs[li="VCE_Flour"]')[0]
-            self.assertEqual(node.xpath('./li/text()'), ['VCE_Flour','PFA_RiceFlour','PFA_Cornmeal'])
+            self.assertEqual(node.xpath('./li/text()'), ['VCE_Flour'])
+            self.assertEqual(node.getparent().xpath('./categories/li/text()'), ['PFA_GrainFlour'])
             for tag in ('fixedIngredientFilter','defaultIngredientFilter'):
-                self.assertEqual(rec.xpath(f'./{tag}/thingDefs/li/text()'), ['PFA_RiceFlour','PFA_Cornmeal'])
+                self.assertEqual(rec.xpath(f'./{tag}/categories/li/text()'), ['PFA_GrainFlour'])
+                self.assertFalse(rec.xpath(f'./{tag}/thingDefs'))
         for name in ('OtherBake', 'VCE_CookBakeThirdParty'):
             rec=recipes.xpath(f'/Defs/RecipeDef[defName="{name}"]')[0]
             self.assertEqual(rec.xpath('./ingredients/li/filter/thingDefs/li/text()'), ['VCE_Flour'])
@@ -124,7 +143,7 @@ class TestMod(unittest.TestCase):
         recipes=fixture()
         original=etree.tostring(recipes)
         run_add_patch(recipes, etree.parse(str(MOD/'Patches/VCE_FlourAlternatives.xml')))
-        for node in recipes.xpath('//li[text()="PFA_RiceFlour" or text()="PFA_Cornmeal"]'):
+        for node in recipes.xpath('//filter/categories[li="PFA_GrainFlour"]'):
             node.getparent().remove(node)
         for node in list(recipes.xpath('/Defs/RecipeDef[defName]/*[self::fixedIngredientFilter or self::defaultIngredientFilter]|//filter/customSummary')):
             node.getparent().remove(node)
@@ -142,3 +161,4 @@ class TestMod(unittest.TestCase):
                 self.assertEqual(thing.findtext(field), original.findtext(field))
 
 if __name__=='__main__': unittest.main()
+

@@ -42,3 +42,14 @@ Finding: 1.7.4985-unstable reference requests Assembly-CSharp 1.7.9790; LoadFrom
 Ruling: build 1.7 against oldest RimRef 1.7.4977-alpha.1 (1.7.9782); Metadata and GameRuntime checks guard the reference version.
 Added opt-in tests/GameRuntime (RIMWORLD_17_MANAGED_DIR): real solver, PatchOperationAdd, XmlInheritance on the built DLL; 33 checks pass on 1.7.9787.
 Reason: CI cannot run game assemblies; this caught the version-binding failure that reference-only checks missed.
+
+
+## 2026-10-24: 焼き料理の材料設定から粉が消える問題
+
+- 原因：3種類の粉は RoughPlantBase の foodType=Plant を継承する。VCE の焼き料理の fixedIngredientFilter は AllowPlantFood を禁止するため、ゲームの Listing_TreeThingFilter.Visible(ThingDef) が粉を隠していた。単一の固定材料から選択可能な粉枠へ変更した際に表面化した。
+- 修正：ソルバーパッチの初期化成功時、既存の対象7レシピだけ fixedIngredientFilter.SetAllow(AllowPlantFood, true) を呼ぶ。ほかの特殊フィルター、材料候補、別レシピ、プレイヤーの製造指示設定は変更しない。
+- 回帰テスト：実ゲームの表示判定に Plant 型の粉を入力して修正前の失敗を確認。修正後は3種類が表示対象となり、非対象レシピの禁止設定は残る。CIの境界テストでも7レシピと別の特殊フィルターの保持を検査する。
+- ローカル検証：RimWorld 1.7.9790.38077でビルド成功、実アセンブリ検査37項目成功。ゲーム画面の描画・実際の調理は未確認。
+- 範囲：代替材料の追加は従来どおりVCE本体の焼き料理7レシピ。全MODの小麦粉レシピへの自動展開はこの不具合修正に含めない。
+
+- ユーザーの設計提案を反映し、PFA_GrainFlour カテゴリーを追加。3種の粉の所属と7レシピの粉枠・fixed/defaultフィルターをカテゴリー参照へ統一した。食品種別による非表示判定はカテゴリーと独立しているため、AllowPlantFood の整合処理も保持する。

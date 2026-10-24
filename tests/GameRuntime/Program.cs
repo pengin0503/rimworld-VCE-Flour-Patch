@@ -2,7 +2,8 @@
 // WorkGiver_DoBill solvers, PatchOperationAdd and XmlInheritance with the built mod DLL.
 // Replaced: the nutrition getter (fixed 0.05) and engine services the solvers do not use
 // (profiler, mod-config lookup, type scan). ThingDefs skip their constructor, which loads graphics.
-// This is NOT an in-game test: hauling, consumption, saving and UI are not exercised.
+// This is NOT an in-game test: hauling, consumption, saving and rendered UI are not exercised.
+// The real ingredient-list visibility predicate is exercised with Plant-typed flour defs.
 using System.Reflection;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
@@ -15,6 +16,7 @@ using Verse;
 static class Program
 {
     static int failures, nextId = 1;
+    static string flourCategoryName;
     static readonly MethodInfo AllowMix = AccessTools.Method(typeof(WorkGiver_DoBill), "TryFindBestBillIngredientsInSet_AllowMix");
     static readonly MethodInfo Dispatch = AccessTools.Method(typeof(WorkGiver_DoBill), "TryFindBestBillIngredientsInSet");
 
@@ -75,12 +77,15 @@ static class Program
         {
             XmlNode r = XmlInheritance.GetResolvedNodeFor(node);
             string L(string xpath) => string.Join(",", r.SelectNodes(xpath).Cast<XmlNode>().Select(x => x.InnerText));
-            const string flours = "VCE_Flour,PFA_RiceFlour,PFA_Cornmeal";
             XmlNode slot = r.SelectSingleNode("ingredients/li[filter/thingDefs/li='VCE_Flour']");
             summary = slot?.SelectSingleNode("filter/customSummary")?.InnerText;
+            flourCategoryName = slot?.SelectSingleNode("filter/categories/li")?.InnerText;
             Check("inherited filters: " + r["defName"].InnerText,
-                L("fixedIngredientFilter/thingDefs/li") == flours && L("defaultIngredientFilter/thingDefs/li") == flours
-                && L("ingredients/li/filter/thingDefs[li='VCE_Flour']/li") == flours
+                L("fixedIngredientFilter/thingDefs/li") == "VCE_Flour" && L("defaultIngredientFilter/thingDefs/li") == "VCE_Flour"
+                && L("ingredients/li/filter/thingDefs[li='VCE_Flour']/li") == "VCE_Flour"
+                && L("ingredients/li/filter[thingDefs/li='VCE_Flour']/categories/li") == "PFA_GrainFlour"
+                && L("fixedIngredientFilter/categories/li").Contains("PFA_GrainFlour")
+                && L("defaultIngredientFilter/categories/li").Contains("PFA_GrainFlour")
                 && r.SelectNodes("fixedIngredientFilter").Count == 1 && r.SelectNodes("defaultIngredientFilter").Count == 1
                 && L("fixedIngredientFilter/categories/li").Contains("FoodRaw")
                 && L("fixedIngredientFilter/specialFiltersToDisallow/li") == "AllowPlantFood"
@@ -110,10 +115,24 @@ static class Program
     {
         ThingDef wheat = Def("VCE_Flour"), rice = Def("PFA_RiceFlour"), corn = Def("PFA_Cornmeal");
         ThingDef meat = Def("Meat_Test"), veg = Def("RawPotato_Test"), thirdParty = Def("RC2_Flour_Test");
+        // RoughPlantBase gives the shipped flours foodType=Plant, which VCE's
+        // inherited AllowPlantFood restriction hides in the bill UI.
+        foreach (ThingDef flour in new[] { wheat, rice, corn })
+            flour.ingestible = new IngestibleProperties { foodType = FoodTypeFlags.Plant };
+        var plantFood = new SpecialThingFilterDef
+        {
+            defName = "AllowPlantFood", workerClass = typeof(SpecialThingFilterWorker_PlantFood),
+        };
+        DefDatabase<SpecialThingFilterDef>.Add(plantFood);
+        var grainCategory = new ThingCategoryDef
+        {
+            defName = flourCategoryName, childThingDefs = new List<ThingDef> { wheat, rice, corn, thirdParty },
+        };
         RecipeDef Recipe(string name, bool mix)
         {
             ThingDef[] all = { meat, veg, wheat, rice, corn, thirdParty };
-            var flourSlot = new IngredientCount { filter = Filter(wheat, rice, corn) };
+            var flourSlot = new IngredientCount { filter = new ThingFilter() };
+            flourSlot.filter.SetAllow(grainCategory, true, null, null);
             flourSlot.filter.customSummary = summary;
             flourSlot.SetBaseCount(0.5f);
             var meatSlot = new IngredientCount { filter = Filter(meat) }; meatSlot.SetBaseCount(0.25f);
@@ -124,6 +143,7 @@ static class Program
                 ingredients = new List<IngredientCount> { meatSlot, vegSlot, flourSlot },
             };
             AccessTools.Field(typeof(RecipeDef), "ingredientValueGetterClass").SetValue(r, typeof(FixedNutrition));
+            r.fixedIngredientFilter.SetAllow(plantFood, false);
             DefDatabase<RecipeDef>.Add(r);
             return r;
         }
@@ -151,13 +171,28 @@ static class Program
         string Chosen() => string.Join(",", chosen.Select(c => c.Thing.def.defName + "x" + c.Count));
         bool Only(ThingDef flour) => chosen.Where(c => fine.ingredients[2].filter.Allows(c.Thing.def)).All(c => c.Thing.def == flour);
 
+        Check("recipe category accepts an additional registered flour", fine.ingredients[2].filter.Allows(thirdParty));
         Check("flour slot label", fine.ingredients[2].Summary == "0.5x grain flour", fine.ingredients[2].Summary);
         Check("control: unpatched game mixes wheat 5 + rice 5", Run(With(T(wheat, 5), T(rice, 5)), MakeBill(fine)), Chosen());
+
+        bool Visible(RecipeDef r, ThingDef flour)
+        {
+            var listing = (Listing_TreeThingFilter)RuntimeHelpers.GetUninitializedObject(typeof(Listing_TreeThingFilter));
+            AccessTools.Field(typeof(Listing_TreeThingFilter), "parentFilter").SetValue(listing, r.fixedIngredientFilter);
+            return (bool)AccessTools.Method(typeof(Listing_TreeThingFilter), "Visible", new[] { typeof(ThingDef) })
+                .Invoke(listing, new object[] { flour });
+        }
+        Check("control: inherited plant restriction hides all three flours",
+            new[] { wheat, rice, corn }.All(f => !Visible(fine, f)));
 
         Type patch = mod.GetType("VCEFlourAlternatives.FlourSelectionPatch", true);
         // Same call Bootstrap makes; Bootstrap itself also logs, which needs the full engine.
         patch.GetMethod("Install", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, null);
         Check("patch installed on the game's solver", Harmony.GetPatchInfo(AllowMix)?.Owners.Contains("pengin0503.vce.flouralternatives") == true);
+
+        Check("target bill UI shows wheat, rice flour and cornmeal",
+            new[] { fine, gourmet }.All(r => new[] { wheat, rice, corn }.All(f => Visible(r, f))));
+        Check("unrelated recipe keeps its plant restriction", !Visible(other, rice));
 
         Check("wheat 5 + rice 5 rejected", !Run(With(T(wheat, 5), T(rice, 5)), MakeBill(fine)) && chosen.Count == 0);
         Check("missing reports the flour slot", missing.Count == 1 && missing[0] == fine.ingredients[2]);

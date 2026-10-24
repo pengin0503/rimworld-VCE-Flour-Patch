@@ -31,7 +31,21 @@ if(args.Contains("--missing-wheat")) {
  Assert(!flourSlot.filter.Allowed.Contains(rice)&&!flourSlot.filter.Allowed.Contains(corn)&&recipe.fixedIngredientFilter.Allowed.Contains(corn));
  Console.WriteLine("PASS fail-closed initialization without wheat flour clears added flours from all slots");return;
 }
+var plantFood=new SpecialThingFilterDef{defName="AllowPlantFood"};
+var anotherRestriction=new SpecialThingFilterDef{defName="OtherRestriction"};
+DefDatabase<SpecialThingFilterDef>.AllDefsListForReading.AddRange(new[]{plantFood,anotherRestriction});
+var targetRecipes=new[]{recipe}.Concat(new[]{"VCE_CookBakeSimple","VCE_CookBakeSimpleBulk","VCE_CookBakeFineBulk","VCE_CookBakeLavish","VCE_CookBakeLavishBulk","VCE_CookBakeGourmet"}.Select(name=>new RecipeDef{defName=name})).ToArray();
+var unrelatedRecipe=new RecipeDef{defName="OtherBake"};
+DefDatabase<RecipeDef>.AllDefsListForReading.AddRange(targetRecipes.Skip(1).Append(unrelatedRecipe));
+foreach(var r in targetRecipes.Append(unrelatedRecipe)) {
+ r.fixedIngredientFilter.SetAllow(plantFood,false);
+ r.fixedIngredientFilter.SetAllow(anotherRestriction,false);
+}
 RuntimeHelpers.RunClassConstructor(typeof(Bootstrap).TypeHandle);
+Assert(targetRecipes.All(r=>!r.fixedIngredientFilter.DisallowedSpecialFilters.Contains(plantFood)));
+Assert(targetRecipes.All(r=>r.fixedIngredientFilter.DisallowedSpecialFilters.Contains(anotherRestriction)));
+Assert(unrelatedRecipe.fixedIngredientFilter.DisallowedSpecialFilters.Contains(plantFood));
+Console.WriteLine("PASS all seven target filters allow plant flour while retaining other restrictions and unrelated recipes");
 Assert(Harmony.GetPatchInfo(FlourSelectionPatch.ResolveTarget()).Owners.Contains(Bootstrap.HarmonyId));
 var bill=new Bill{recipe=recipe};var chosen=new List<ThingCount>();var missing=new List<IngredientCount>();
 Thing T(ThingDef def,int n)=>new(){def=def,stackCount=n};
@@ -59,7 +73,7 @@ Assert(Run(T(thirdParty,4),T(thirdParty,6))&&chosen.All(c=>c.Thing.def==thirdPar
 flourSlot.filter.SetAllow(thirdParty,false);Console.WriteLine("PASS flour added to the slot by another mod is its own kind");
 flourSlot.filter.SetAllow(wheat,false);Assert(Run(T(rice,5),T(corn,5)));flourSlot.filter.SetAllow(wheat,true);
 Console.WriteLine("PASS recipe without a wheat flour slot is left to the original solver");
-Console.WriteLine("8 adapter scenarios passed using real Harmony 3 and a boundary double, NOT RimWorld runtime.");
+Console.WriteLine("9 adapter scenarios passed using real Harmony 3 and a boundary double, NOT RimWorld runtime.");
 
 static class ClonePrefix {
  public static int Calls;

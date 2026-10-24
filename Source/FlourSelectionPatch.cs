@@ -56,6 +56,14 @@ namespace VCEFlourAlternatives
             var prefix = new HarmonyMethod(typeof(FlourSelectionPatch), nameof(Prefix));
             prefix.priority = Priority.Last;
             new Harmony(Bootstrap.HarmonyId).Patch(target, prefix: prefix);
+            // RoughPlantBase makes wheat, rice flour and cornmeal Plant food. VCE's
+            // inherited restriction hides all of them in the bill's ingredient UI.
+            // The fixed def/category allow-list still excludes hay and other non-ingredients.
+            SpecialThingFilterDef plantFood = DefDatabase<SpecialThingFilterDef>.GetNamedSilentFail("AllowPlantFood");
+            if (plantFood != null)
+                foreach (RecipeDef recipe in DefDatabase<RecipeDef>.AllDefsListForReading)
+                    if (FlourPolicy.IsTarget(recipe.defName))
+                        recipe.fixedIngredientFilter?.SetAllow(plantFood, true);
         }
 
         // Defs are resolved before StaticConstructorOnStartup. Only the flour slots lose the
