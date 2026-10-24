@@ -42,7 +42,7 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          import hashlib,json,zipfile
+          import hashlib,json,os,subprocess,zipfile
           root=Path('beta-input')
           manifest=json.loads((root/'build-manifest.json').read_text())
           data=(root/'VCE-Flour-Alternatives-dev.zip').read_bytes()
@@ -50,7 +50,13 @@ jobs:
           assert manifest['in_game_verified'] is False
           with zipfile.ZipFile(root/'VCE-Flour-Alternatives-dev.zip') as z:
               names=z.namelist()
-              assert len(names)==15
+              source_files=subprocess.check_output(['git','ls-tree','-r','--name-only',os.environ['SOURCE_SHA'],'--','VCE-Flour-Alternatives'],text=True).splitlines()
+              expected={n for n in source_files if n.endswith(('.xml','.png')) or n=='VCE-Flour-Alternatives/README.md'}
+              expected.update(f'VCE-Flour-Alternatives/{v}/Assemblies/VCEFlourAlternatives.dll' for v in ('1.6','1.7'))
+              assert set(names)==expected and len(names)==len(expected),(set(names)^expected,len(names))
+              for name in source_files:
+                  if name in expected:
+                      assert z.read(name)==Path(name).read_bytes(),name
               assert 'VCE-Flour-Alternatives/Defs/ThingCategoryDefs/GrainFlour.xml' in names
               assert 'VCE-Flour-Alternatives/Patches/PFA_GrainFlour.xml' in names
               assert 'VCE-Flour-Alternatives/Languages/Japanese/DefInjected/ThingCategoryDef/GrainFlour.xml' in names
