@@ -2,7 +2,7 @@
 
 Vanilla Cooking Expanded（VCE）の既存の焼き料理に、**米粉とトウモロコシ粉を小麦粉の代替として追加**するMODです。専用料理や製粉設備は追加しません。
 
-**状態：開発版。1.6/1.7用DLLのビルドと自動テストは実施済みですが、RimWorld実ゲームでの検証は未完了です。[修正版ベータ v0.1.0-beta.2](https://github.com/pengin0503/rimworld-VCE-Flour-Patch/releases/tag/v0.1.0-beta.2)をプレリリースとして配布します。**
+**状態：開発版。1.6/1.7用DLLのビルドと自動テストは実施済みですが、RimWorld実ゲームでの検証は未完了です。[修正版ベータ v0.1.0-beta.3](https://github.com/pengin0503/rimworld-VCE-Flour-Patch/releases/tag/v0.1.0-beta.3)をプレリリースとして配布します。**
 
 ## 機能
 
@@ -45,7 +45,7 @@ RimWorld **1.6 / 1.7を対象**に個別ビルドします。実機での対応�
 
 ## 入手・インストール
 
-[修正版ベータ v0.1.0-beta.2](https://github.com/pengin0503/rimworld-VCE-Flour-Patch/releases/tag/v0.1.0-beta.2) のAssetsから `VCE-Flour-Alternatives-0.1.0-beta.2.zip` を入手できます。実ゲーム未検証のプレリリースであり、完成版ではありません。
+[修正版ベータ v0.1.0-beta.3](https://github.com/pengin0503/rimworld-VCE-Flour-Patch/releases/tag/v0.1.0-beta.3) のAssetsから `VCE-Flour-Alternatives-0.1.0-beta.3.zip` を入手できます。実ゲーム未検証のプレリリースであり、完成版ではありません。
 
 **注意**：v0.1.0-beta.1の1.7用DLLは新しい参照（Assembly-CSharp 1.7.9790）でビルドしたため、それより前の1.7ビルドでは読み込めない可能性が高いです。読み込めないと粉の合算防止が働きません。修正版はmainの開発版（Actionsのartifact）を使ってください。
 

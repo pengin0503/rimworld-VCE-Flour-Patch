@@ -2,13 +2,13 @@ name: Publish beta release
 on:
   push:
     branches: [main]
-    paths: ['.github/releases/v0.1.0-beta.2.md']
+    paths: ['.github/releases/v0.1.0-beta.3.md']
   workflow_dispatch:
 permissions:
   contents: write
   actions: read
 concurrency:
-  group: publish-v0.1.0-beta.2
+  group: publish-v0.1.0-beta.3
   cancel-in-progress: false
 jobs:
   publish:
@@ -17,8 +17,8 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
-      TAG: v0.1.0-beta.2
-      SOURCE_SHA: be3c29e4a790044e6908415aeb4856d67a484f96
+      TAG: v0.1.0-beta.3
+      SOURCE_SHA: e20cf07a75ca9e5428426f73089ce155f433a833
     steps:
       - uses: actions/checkout@v4
         with:
@@ -26,16 +26,16 @@ jobs:
       - name: Confirm validated source and CI result
         run: |
           git diff --exit-code "$SOURCE_SHA" HEAD -- Source VCE-Flour-Alternatives tools tests requirements-test.txt
-          gh api "repos/$GH_REPO/actions/runs/40082616273" --jq '{status,conclusion,head_sha}' > ci-result.json
+          gh api "repos/$GH_REPO/actions/runs/40083558727" --jq '{status,conclusion,head_sha}' > ci-result.json
           python - <<'PY'
           import json
           r=json.load(open('ci-result.json'))
-          assert r=={'status':'completed','conclusion':'success','head_sha':'be3c29e4a790044e6908415aeb4856d67a484f96'},r
+          assert r=={'status':'completed','conclusion':'success','head_sha':'e20cf07a75ca9e5428426f73089ce155f433a833'},r
           PY
       - uses: actions/download-artifact@v4
         with:
           name: VCE-Flour-Alternatives-development
-          run-id: 40082616273
+          run-id: 40083558727
           github-token: ${{ github.token }}
           path: beta-input
       - name: Check artifact and prepare beta ZIP
@@ -66,11 +66,11 @@ jobs:
               for build in manifest['builds']:
                   path=f"VCE-Flour-Alternatives/{build['game'][:3]}/Assemblies/VCEFlourAlternatives.dll"
                   assert hashlib.sha256(z.read(path)).hexdigest()==build['sha256']
-          Path('VCE-Flour-Alternatives-0.1.0-beta.2.zip').write_bytes(data)
+          Path('VCE-Flour-Alternatives-0.1.0-beta.3.zip').write_bytes(data)
           print('Verified runtime-only beta package:',hashlib.sha256(data).hexdigest())
           PY
       - name: Create draft with asset, then publish prerelease
         run: |
-          gh release create "$TAG" VCE-Flour-Alternatives-0.1.0-beta.2.zip --target "$GITHUB_SHA" --draft --prerelease --title "VCE Flour Alternatives v0.1.0-beta.2" --notes-file .github/releases/v0.1.0-beta.2.md
+          gh release create "$TAG" VCE-Flour-Alternatives-0.1.0-beta.3.zip --target "$GITHUB_SHA" --draft --prerelease --title "VCE Flour Alternatives v0.1.0-beta.3" --notes-file .github/releases/v0.1.0-beta.3.md
           gh release edit "$TAG" --draft=false --prerelease --latest=false
           gh release view "$TAG" --json url,isDraft,isPrerelease,assets
