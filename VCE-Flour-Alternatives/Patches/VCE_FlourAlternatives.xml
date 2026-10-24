@@ -6,10 +6,9 @@
         <xpath>Defs/RecipeDef[defName="VCE_CookBakeSimple" or defName="VCE_CookBakeSimpleBulk" or defName="VCE_CookBakeFine" or defName="VCE_CookBakeFineBulk" or defName="VCE_CookBakeLavish" or defName="VCE_CookBakeLavishBulk" or defName="VCE_CookBakeGourmet"]</xpath>
         <value>
           <fixedIngredientFilter>
-            <thingDefs>
-              <li>PFA_RiceFlour</li>
-              <li>PFA_Cornmeal</li>
-            </thingDefs>
+            <categories>
+              <li>PFA_GrainFlour</li>
+            </categories>
           </fixedIngredientFilter>
         </value>
       </li>
@@ -17,21 +16,20 @@
         <xpath>Defs/RecipeDef[defName="VCE_CookBakeSimple" or defName="VCE_CookBakeSimpleBulk" or defName="VCE_CookBakeFine" or defName="VCE_CookBakeFineBulk" or defName="VCE_CookBakeLavish" or defName="VCE_CookBakeLavishBulk" or defName="VCE_CookBakeGourmet"]</xpath>
         <value>
           <defaultIngredientFilter>
-            <thingDefs>
-              <li>PFA_RiceFlour</li>
-              <li>PFA_Cornmeal</li>
-            </thingDefs>
+            <categories>
+              <li>PFA_GrainFlour</li>
+            </categories>
           </defaultIngredientFilter>
         </value>
       </li>
       <li Class="PatchOperationAdd">
-        <xpath>Defs/RecipeDef[defName="VCE_CookBakeSimple" or defName="VCE_CookBakeSimpleBulk" or defName="VCE_CookBakeFine" or defName="VCE_CookBakeFineBulk" or defName="VCE_CookBakeLavish" or defName="VCE_CookBakeLavishBulk" or defName="VCE_CookBakeGourmet"]/ingredients/li/filter/thingDefs[li="VCE_Flour"]</xpath>
+        <xpath>Defs/RecipeDef[defName="VCE_CookBakeSimple" or defName="VCE_CookBakeSimpleBulk" or defName="VCE_CookBakeFine" or defName="VCE_CookBakeFineBulk" or defName="VCE_CookBakeLavish" or defName="VCE_CookBakeLavishBulk" or defName="VCE_CookBakeGourmet"]/ingredients/li/filter[thingDefs/li="VCE_Flour"]</xpath>
         <value>
-          <li>PFA_RiceFlour</li>
-          <li>PFA_Cornmeal</li>
+          <categories>
+            <li>PFA_GrainFlour</li>
+          </categories>
         </value>
       </li>
-      <!-- Several allowed defs make the slot summary fall back to "ingredients"; name it explicitly. -->
       <li Class="PatchOperationAdd">
         <xpath>Defs/RecipeDef[defName="VCE_CookBakeSimple" or defName="VCE_CookBakeSimpleBulk" or defName="VCE_CookBakeFine" or defName="VCE_CookBakeFineBulk" or defName="VCE_CookBakeLavish" or defName="VCE_CookBakeLavishBulk" or defName="VCE_CookBakeGourmet"]/ingredients/li/filter[thingDefs/li="VCE_Flour"]</xpath>
         <value>

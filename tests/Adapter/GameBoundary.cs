@@ -2,12 +2,13 @@
 using System.Runtime.CompilerServices;
 namespace Verse {
  public class StaticConstructorOnStartup:Attribute {}
+ public class SpecialThingFilterDef {public string defName;}
  public class ThingDef {public string defName;}
  public class Thing {public ThingDef def;public int stackCount;}
  public struct ThingCount {public Thing Thing; public int Count;public ThingCount(Thing t,int n){Thing=t;Count=n;}}
  public struct IntVec3 {}
  public class IngredientCount {public ThingFilter filter=new();}
- public class ThingFilter {public HashSet<ThingDef> Allowed=new();public string customSummary;public bool Allows(ThingDef d)=>Allowed.Contains(d);public void SetAllow(ThingDef d,bool allow){if(allow)Allowed.Add(d);else Allowed.Remove(d);}}
+ public class ThingFilter {public HashSet<SpecialThingFilterDef> DisallowedSpecialFilters=new();public void SetAllow(SpecialThingFilterDef d,bool allow){if(allow)DisallowedSpecialFilters.Remove(d);else DisallowedSpecialFilters.Add(d);}public HashSet<ThingDef> Allowed=new();public string customSummary;public bool Allows(ThingDef d)=>Allowed.Contains(d);public void SetAllow(ThingDef d,bool allow){if(allow)Allowed.Add(d);else Allowed.Remove(d);}}
  public class RecipeDef {public string defName;public bool allowMixingIngredients=true;public List<IngredientCount> ingredients=new(){new()};public ThingFilter fixedIngredientFilter=new();public ThingFilter defaultIngredientFilter=new();}
  public static class DefDatabase<T> where T:class {public static List<T> AllDefsListForReading=new();public static T GetNamedSilentFail(string name)=>AllDefsListForReading.FirstOrDefault(x=>(string)x.GetType().GetField("defName").GetValue(x)==name);}
  public static class Log {public static void Error(string s)=>Console.WriteLine(s); public static void Message(string s)=>Console.WriteLine(s);}

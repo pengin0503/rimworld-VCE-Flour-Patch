@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+  <!-- Keep wheat in the PlantMatter hierarchy through its new flour subcategory.
+       Replace only that membership, preserving categories added by other mods. -->
+  <Operation Class="PatchOperationReplace">
+    <xpath>Defs/ThingDef[defName="VCE_Flour"]/thingCategories/li[.="PlantMatter"]</xpath>
+    <value><li>PFA_GrainFlour</li></value>
+  </Operation>
+</Patch>
