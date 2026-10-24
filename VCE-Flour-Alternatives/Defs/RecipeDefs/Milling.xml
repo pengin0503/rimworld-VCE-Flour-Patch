@@ -2,10 +2,10 @@
 <Defs>
   <RecipeDef>
     <defName>PFA_MillRice</defName>
-    <label>mill rice into rice flour</label>
-    <description>Grind 10 rice into 10 rice flour, which can replace wheat flour in VCE baked meals.</description>
+    <label>mill rice into rice flour x2</label>
+    <description>Grind 20 rice into 20 rice flour, which can replace wheat flour in VCE baked meals.</description>
     <jobString>Grinding rice into rice flour.</jobString>
-    <workAmount>400</workAmount>
+    <workAmount>800</workAmount>
     <workSkill>Cooking</workSkill>
     <workSpeedStat>CookSpeed</workSpeedStat>
     <effectWorking>Cook</effectWorking>
@@ -23,18 +23,47 @@
     <ingredients>
       <li>
         <filter><thingDefs><li>RawRice</li></thingDefs></filter>
-        <count>10</count>
+        <count>20</count>
       </li>
     </ingredients>
-    <products><PFA_RiceFlour>10</PFA_RiceFlour></products>
+    <products><PFA_RiceFlour>20</PFA_RiceFlour></products>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>PFA_MillRiceBulk</defName>
+    <label>mill rice into rice flour x8</label>
+    <description>Grind 80 rice into 80 rice flour, which can replace wheat flour in VCE baked meals.</description>
+    <jobString>Grinding rice into rice flour.</jobString>
+    <workAmount>3200</workAmount>
+    <workSkill>Cooking</workSkill>
+    <workSpeedStat>CookSpeed</workSpeedStat>
+    <effectWorking>Cook</effectWorking>
+    <soundWorking>Recipe_CookMeal</soundWorking>
+    <recipeUsers>
+      <li>FueledStove</li>
+      <li>ElectricStove</li>
+    </recipeUsers>
+    <fixedIngredientFilter>
+      <thingDefs><li>RawRice</li></thingDefs>
+    </fixedIngredientFilter>
+    <defaultIngredientFilter>
+      <thingDefs><li>RawRice</li></thingDefs>
+    </defaultIngredientFilter>
+    <ingredients>
+      <li>
+        <filter><thingDefs><li>RawRice</li></thingDefs></filter>
+        <count>80</count>
+      </li>
+    </ingredients>
+    <products><PFA_RiceFlour>80</PFA_RiceFlour></products>
   </RecipeDef>
 
   <RecipeDef>
     <defName>PFA_MillCorn</defName>
-    <label>mill corn into cornmeal</label>
-    <description>Grind 10 corn into 10 cornmeal, which can replace wheat flour in VCE baked meals.</description>
+    <label>mill corn into cornmeal x2</label>
+    <description>Grind 20 corn into 20 cornmeal, which can replace wheat flour in VCE baked meals.</description>
     <jobString>Grinding corn into cornmeal.</jobString>
-    <workAmount>400</workAmount>
+    <workAmount>800</workAmount>
     <workSkill>Cooking</workSkill>
     <workSpeedStat>CookSpeed</workSpeedStat>
     <effectWorking>Cook</effectWorking>
@@ -52,9 +81,38 @@
     <ingredients>
       <li>
         <filter><thingDefs><li>RawCorn</li></thingDefs></filter>
-        <count>10</count>
+        <count>20</count>
       </li>
     </ingredients>
-    <products><PFA_Cornmeal>10</PFA_Cornmeal></products>
+    <products><PFA_Cornmeal>20</PFA_Cornmeal></products>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>PFA_MillCornBulk</defName>
+    <label>mill corn into cornmeal x8</label>
+    <description>Grind 80 corn into 80 cornmeal, which can replace wheat flour in VCE baked meals.</description>
+    <jobString>Grinding corn into cornmeal.</jobString>
+    <workAmount>3200</workAmount>
+    <workSkill>Cooking</workSkill>
+    <workSpeedStat>CookSpeed</workSpeedStat>
+    <effectWorking>Cook</effectWorking>
+    <soundWorking>Recipe_CookMeal</soundWorking>
+    <recipeUsers>
+      <li>FueledStove</li>
+      <li>ElectricStove</li>
+    </recipeUsers>
+    <fixedIngredientFilter>
+      <thingDefs><li>RawCorn</li></thingDefs>
+    </fixedIngredientFilter>
+    <defaultIngredientFilter>
+      <thingDefs><li>RawCorn</li></thingDefs>
+    </defaultIngredientFilter>
+    <ingredients>
+      <li>
+        <filter><thingDefs><li>RawCorn</li></thingDefs></filter>
+        <count>80</count>
+      </li>
+    </ingredients>
+    <products><PFA_Cornmeal>80</PFA_Cornmeal></products>
   </RecipeDef>
 </Defs>
