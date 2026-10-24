@@ -51,3 +51,16 @@ Harmony境界テストでは、混合不足、同種複数スタック、材料�
 最初のアダプタ実装には後追いで境界テストを追加しており、すべてを厳密なテスト先行で実施したとはしない。
 
 範囲外として実装を見送った新機能はない。他MOD全般の互換保証、性能ベンチマーク、ゲーム本体を使う試験はこの環境では未実施で、成功扱いにしていない。
+
+## GitHub CI最終確認（2026-10-24）
+
+mainの実装コミット `9e4d9b01cfadbad20631e969c721ed2165629648` について、[CI run #1](https://github.com/pengin0503/rimworld-VCE-Flour-Patch/actions/runs/39959441775) が成功したことをログまで確認した。CIの追加実行は不要だった。
+
+- Python 15件、C#ポリシー15件、実Harmony境界9シナリオが成功。
+- 両バージョンのDLLビルドは警告0・エラー0。両版のAPI・ランタイム検査も成功。
+- [検証用artifact](https://github.com/pengin0503/rimworld-VCE-Flour-Patch/actions/runs/39959441775/artifacts/12503193882) を実際にダウンロードし、外側のSHA-256、内側ZIPの記録ハッシュ、両版DLLの記録ハッシュを照合した。
+- MOD本体ZIPは12ファイル。自作DLL2つ、About、Defs、Patches、Textures、Languages、loadFolders、導入説明だけを含む。開発ソース・テスト・ゲームDLL・Harmony DLLは含まれない。
+- 同梱PNGは提供元ZIPとバイト一致。
+- artifactの期限は2027-01-21（UTC）。期限後は同じワークフローを実行して再生成できる。
+
+実ゲーム未検証の状態は変わっていない。完成版Releaseは作成していない。公開前に上記受入試験を両バージョンで完了する必要がある。
