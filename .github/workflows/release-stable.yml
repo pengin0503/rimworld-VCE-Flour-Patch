@@ -17,7 +17,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
       TAG: v0.1.0
-      SOURCE_SHA: 118b36b2cf97b75c630af2e72c68962310826fdb
+      SOURCE_SHA: d560097d73e5a66b6d08fd9d018b193f45adb5fa
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,16 +25,16 @@ jobs:
       - name: Confirm validated source and CI result
         run: |
           git diff --exit-code "$SOURCE_SHA" HEAD -- Source VCE-Flour-Alternatives tools tests requirements-test.txt
-          gh api "repos/$GH_REPO/actions/runs/40084824182" --jq '{status,conclusion,head_sha}' > ci-result.json
+          gh api "repos/$GH_REPO/actions/runs/40085118584" --jq '{status,conclusion,head_sha}' > ci-result.json
           python - <<'PY'
           import json
           r=json.load(open('ci-result.json'))
-          assert r=={'status':'completed','conclusion':'success','head_sha':'118b36b2cf97b75c630af2e72c68962310826fdb'},r
+          assert r=={'status':'completed','conclusion':'success','head_sha':'d560097d73e5a66b6d08fd9d018b193f45adb5fa'},r
           PY
       - uses: actions/download-artifact@v4
         with:
           name: VCE-Flour-Alternatives-development
-          run-id: 40084824182
+          run-id: 40085118584
           github-token: ${{ github.token }}
           path: release-input
       - name: Check artifact and prepare release ZIP
@@ -46,7 +46,7 @@ jobs:
           manifest=json.loads((root/'build-manifest.json').read_text())
           data=(root/'VCE-Flour-Alternatives-dev.zip').read_bytes()
           assert hashlib.sha256(data).hexdigest()==manifest['zip_sha256']
-          assert manifest['in_game_verified'] is False
+          assert manifest['in_game_verified'] is False  # CI does not encode separate user-reported game validation.
           with zipfile.ZipFile(root/'VCE-Flour-Alternatives-dev.zip') as z:
               names=z.namelist()
               source_files=subprocess.check_output(['git','ls-tree','-r','--name-only',os.environ['SOURCE_SHA'],'--','VCE-Flour-Alternatives'],text=True).splitlines()
