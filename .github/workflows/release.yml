@@ -1,4 +1,5 @@
-# Publishes a release from a pushed tag (v1.2.3 or v1.2.3-beta.1). Nothing release-specific is
+# Publishes a release from a pushed tag (v1.2.3 or v1.2.3-beta.1), or from Actions > Publish release > Run workflow
+# on main with that tag, which creates the tag on the checked commit only after every check passes. Nothing release-specific is
 # written here: the tag must match Source/VCEFlourAlternatives.csproj <Version> and About.xml
 # <modVersion>, and .github/releases/<tag>.md holds the notes. The ZIP is built and verified
 # from the tagged commit itself, so no CI run ID or source SHA has to be copied in.
@@ -6,6 +7,11 @@ name: Publish release
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to create on the selected main commit, e.g. v0.2.0
+        required: true
 permissions:
   contents: write
 concurrency:
@@ -18,7 +24,7 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
-      TAG: ${{ github.ref_name }}
+      TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,6 +33,18 @@ jobs:
         run: |
           git fetch origin main
           git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
+            # A retry after a failed publish finds its own tag on this commit and no release yet; anything else stops.
+            existing=$(git ls-remote origin "refs/tags/$TAG" | cut -f1)
+            if [ -n "$existing" ] && [ "$existing" != "$GITHUB_SHA" ]; then
+              echo "::error::Tag $TAG already exists on another commit" >&2
+              exit 1
+            fi
+            if gh release view "$TAG" >/dev/null 2>&1; then
+              echo "::error::Release $TAG already exists" >&2
+              exit 1
+            fi
+          fi
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -35,7 +53,7 @@ jobs:
           dotnet-version: '10.0.x'
       - run: python -m pip install -r requirements-test.txt
       - name: Check tag, versions and notes before building
-        run: python -c "import sys;sys.path.insert(0,'tools');import check_release;print(check_release.check_versions('$TAG'))"
+        run: python -c "import os,sys;sys.path.insert(0,'tools');import check_release;print(check_release.check_versions(os.environ['TAG']))"
       - name: Build and verify
         run: python tools/verify.py
       - name: Check the package against the tagged source
@@ -45,6 +63,17 @@ jobs:
           python tools/check_release.py --tag "$TAG" --output "dist/VCE-Flour-Alternatives-${version}.zip" | tee check.txt
           echo "zip=dist/VCE-Flour-Alternatives-${version}.zip" >> "$GITHUB_OUTPUT"
           if grep -q 'prerelease=true' check.txt; then echo "flag=--prerelease" >> "$GITHUB_OUTPUT"; else echo "flag=--latest" >> "$GITHUB_OUTPUT"; fi
+      - name: Create the tag on this commit (dispatched runs)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          # Checked again here: another run may have created the tag since the first check.
+          existing=$(git ls-remote origin "refs/tags/$TAG" | cut -f1)
+          if [ -z "$existing" ]; then
+            gh api "repos/$GH_REPO/git/refs" -f ref="refs/tags/$TAG" -f sha="$GITHUB_SHA"
+          elif [ "$existing" != "$GITHUB_SHA" ]; then
+            echo "::error::Tag $TAG points to $existing, not $GITHUB_SHA" >&2
+            exit 1
+          fi
       - name: Publish
         run: |
           gh release create "$TAG" "${{ steps.package.outputs.zip }}" --verify-tag ${{ steps.package.outputs.flag }} \

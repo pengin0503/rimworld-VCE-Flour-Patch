@@ -130,7 +130,7 @@ C#は `WorkGiver_DoBill.TryFindBestBillIngredientsInSet_AllowMix` の正確な5�
 1. `Source/VCEFlourAlternatives.csproj` の `<Version>`、`About/About.xml` の `<modVersion>`、MOD内 `README.md` 1行目の版をそろえる（テストで一致を確認します）。
 2. [検証記録](docs/VALIDATION.md) のチェックリストを1.6/1.7で実施して記入する。
 3. `.github/releases/v<版>.md` にリリースノートを置き、mainへ反映する。
-4. `v<版>`（例：`v0.2.0`、プレリリースは `v0.2.0-beta.1`）のタグをmain上のコミットに付けてpushする。`Publish release` ワークフローが、タグと版の一致を確認し、そのコミットでビルド・検証・梱包検査をしてからリリースを作成します。
+4. `v<版>`（例：`v0.2.0`、プレリリースは `v0.2.0-beta.1`）のタグをmain上のコミットに付けてpushする。またはGitHubのActions → `Publish release` → Run workflow でmainを選び、同じ形式のタグを入力する。`Publish release` ワークフローが、タグと版の一致を確認し、そのコミットでビルド・検証・梱包検査をしてからリリースを作成します（手動実行では、検査に通った後でタグを作ります）。
 
 VCE本体の定義は、`Check upstream VCE` ワークフローが毎週、最新版に対して静的テストを実行して確認します。
 
