@@ -20,11 +20,13 @@ def fixture():
     return root
 
 def run_add_patch(root,patchroot):
-    ops=patchroot.xpath('//Operation[@Class="PatchOperationSequence"]/operations/li[@Class="PatchOperationAdd"]')
-    assert len(ops)==4, f'Expected 4 patch operations, found {len(ops)}'
+    """Applies the sequence like RimWorld: in order, and an unmatched XPath only fails without success=Always."""
+    ops=patchroot.xpath('//Operation[@Class="PatchOperationSequence"]/operations/li')
+    assert len(ops)==8, f'Expected 8 patch operations, found {len(ops)}'
     for op in ops:
+        assert op.get('Class')=='PatchOperationAdd'
         matches=etree.ElementTree(root).xpath("/" + op.findtext("xpath").lstrip("/"))
-        assert matches, f'Unmatched XPath: {op.findtext("xpath")}'
+        assert matches or op.findtext('success')=='Always', f'Unmatched XPath: {op.findtext("xpath")}'
         for match in matches:
             for node in op.find('value'):
                 match.append(etree.fromstring(etree.tostring(node)))
@@ -38,6 +40,20 @@ class TestMod(unittest.TestCase):
         self.assertIn('VanillaExpanded.VCookE',about.xpath('//modDependencies/li/packageId/text()'))
         self.assertIn('brrainz.harmony',about.xpath('//modDependencies/li/packageId/text()'))
         self.assertEqual(set(about.xpath('//supportedVersions/li/text()')), {'1.6','1.7'})
+        # README lists Harmony, Vanilla Expanded Framework and VCE as required, in that load order.
+        self.assertEqual(about.xpath('//modDependencies/li/packageId/text()'),
+                         ['brrainz.harmony','OskarPotocki.VanillaFactionsExpanded.Core','VanillaExpanded.VCookE'])
+        self.assertEqual(about.xpath('//loadAfter/li/text()'),
+                         ['brrainz.harmony','OskarPotocki.VanillaFactionsExpanded.Core','VanillaExpanded.VCookE'])
+        self.assertEqual(about.findtext('.//author'),'pengin0503')
+        self.assertTrue(about.findtext('.//url').startswith('https://github.com/pengin0503/'))
+        version=etree.parse(str(ROOT/'Source/VCEFlourAlternatives.csproj')).findtext('.//Version')
+        self.assertEqual(about.findtext('.//modVersion'),version)
+
+    def test_about_images(self):
+        for name,size in (('Preview.png',(640,360)),('ModIcon.png',(128,128))):
+            with Image.open(MOD/'About'/name) as im:
+                self.assertEqual(im.size,size)
 
     def test_images(self):
         for name in ('VCE_FPatch_Rice_Flour.png','VCE_FPatch_Cornmeal.png'):
@@ -103,6 +119,23 @@ class TestMod(unittest.TestCase):
             self.assertEqual(rec.xpath('./ingredients/li/filter/thingDefs/li/text()'), ['VCE_Flour'])
             self.assertFalse(rec.xpath('./fixedIngredientFilter|./defaultIngredientFilter'))
 
+    def test_recipe_with_its_own_filters_keeps_one_merged_filter(self):
+        # A later VCE version may write fixed/default filters on the concrete recipe instead of the parent.
+        recipes=fixture()
+        rec=recipes.xpath('/Defs/RecipeDef[defName="VCE_CookBakeFine"]')[0]
+        own=etree.SubElement(rec,'fixedIngredientFilter')
+        etree.SubElement(etree.SubElement(own,'categories'),'li').text='FoodRaw'
+        etree.SubElement(etree.SubElement(rec,'defaultIngredientFilter'),'thingDefs')
+        run_add_patch(recipes, etree.parse(str(MOD/'Patches/VCE_FlourAlternatives.xml')))
+        for tag,expected in (('fixedIngredientFilter',['FoodRaw','PFA_GrainFlour']),('defaultIngredientFilter',['PFA_GrainFlour'])):
+            self.assertEqual(len(rec.findall(tag)),1)
+            self.assertEqual(rec.xpath(f'./{tag}/categories/li/text()'),expected)
+        for name in RECIPE_NAMES:
+            if name=='VCE_CookBakeFine': continue
+            other=recipes.xpath(f'/Defs/RecipeDef[defName="{name}"]')[0]
+            for tag in ('fixedIngredientFilter','defaultIngredientFilter'):
+                self.assertEqual(other.xpath(f'./{tag}/categories/li/text()'),['PFA_GrainFlour'])
+
     def test_flour_slot_named_grain_flour(self):
         recipes=fixture()
         run_add_patch(recipes, etree.parse(str(MOD/'Patches/VCE_FlourAlternatives.xml')))
@@ -114,16 +147,19 @@ class TestMod(unittest.TestCase):
         for name in ('OtherBake', 'VCE_CookBakeThirdParty'):
             self.assertFalse(recipes.xpath(f'/Defs/RecipeDef[defName="{name}"]//customSummary'))
 
-    def test_japanese_flour_slot_paths_match_upstream_indices(self):
-        recipes=fixture()
-        expected={}
-        for name in RECIPE_NAMES:
-            slots=recipes.xpath(f'/Defs/RecipeDef[defName="{name}"]/ingredients/li')
-            index=[i for i,li in enumerate(slots) if li.xpath('./filter/thingDefs/li[.="VCE_Flour"]')]
-            self.assertEqual(len(index),1)
-            expected[f'{name}.ingredients.{index[0]}.filter.customSummary']='穀物粉'
-        injected=etree.parse(str(MOD/'Languages/Japanese/DefInjected/RecipeDef/VCE_Bakes.xml')).getroot()
-        self.assertEqual({e.tag:e.text for e in injected if isinstance(e.tag,str)}, expected)
+    def test_keyed_translations_match_and_slot_label_has_no_index(self):
+        # The slot label is applied in code to the slot that accepts wheat, never by ingredient index.
+        self.assertFalse((MOD/'Languages/Japanese/DefInjected/RecipeDef/VCE_Bakes.xml').exists())
+        keys={}
+        for language in ('English','Japanese'):
+            root=etree.parse(str(MOD/f'Languages/{language}/Keyed/VCEFlourAlternatives.xml')).getroot()
+            keys[language]={e.tag:e.text for e in root if isinstance(e.tag,str)}
+        self.assertEqual(set(keys['English']),set(keys['Japanese']))
+        self.assertEqual(keys['English']['PFA_GrainFlourSlot'],'grain flour')
+        self.assertEqual(keys['Japanese']['PFA_GrainFlourSlot'],'穀物粉')
+        for key in ('PFA_MigrateBillsText','PFA_MigrateBillsDone'):
+            for language in keys:
+                self.assertIn('{0}',keys[language][key])
 
     def test_upstream_costs_and_other_slots_unchanged(self):
         recipes=fixture()

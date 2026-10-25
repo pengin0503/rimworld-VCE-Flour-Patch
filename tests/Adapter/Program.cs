@@ -41,7 +41,13 @@ foreach(var r in targetRecipes.Append(unrelatedRecipe)) {
  r.fixedIngredientFilter.SetAllow(plantFood,false);
  r.fixedIngredientFilter.SetAllow(anotherRestriction,false);
 }
+LanguageDatabase.activeLanguage=new LoadedLanguage{Keyed={["PFA_GrainFlourSlot"]="穀物粉"}};
 RuntimeHelpers.RunClassConstructor(typeof(Bootstrap).TypeHandle);
+// The label follows the slot that accepts wheat, wherever VCE puts it in the ingredient list.
+Assert(flourSlot.filter.customSummary=="穀物粉"&&other.filter.customSummary==null);
+// The six stand-in recipes have no wheat slot: each is reported once by name.
+Assert(Log.Warnings.Count==6&&targetRecipes.Skip(1).All(r=>Log.Warnings.Count(w=>w.Contains(r.defName+": no ingredient slot accepts wheat flour"))==1));
+Console.WriteLine("PASS flour slot label is translated and recipes without a flour slot are reported");
 Assert(targetRecipes.All(r=>!r.fixedIngredientFilter.DisallowedSpecialFilters.Contains(plantFood)));
 Assert(targetRecipes.All(r=>r.fixedIngredientFilter.DisallowedSpecialFilters.Contains(anotherRestriction)));
 Assert(unrelatedRecipe.fixedIngredientFilter.DisallowedSpecialFilters.Contains(plantFood));
@@ -73,7 +79,7 @@ Assert(Run(T(thirdParty,4),T(thirdParty,6))&&chosen.All(c=>c.Thing.def==thirdPar
 flourSlot.filter.SetAllow(thirdParty,false);Console.WriteLine("PASS flour added to the slot by another mod is its own kind");
 flourSlot.filter.SetAllow(wheat,false);Assert(Run(T(rice,5),T(corn,5)));flourSlot.filter.SetAllow(wheat,true);
 Console.WriteLine("PASS recipe without a wheat flour slot is left to the original solver");
-Console.WriteLine("9 adapter scenarios passed using real Harmony 3 and a boundary double, NOT RimWorld runtime.");
+Console.WriteLine("10 adapter scenarios passed using real Harmony 3 and a boundary double, NOT RimWorld runtime.");
 
 static class ClonePrefix {
  public static int Calls;

@@ -10,7 +10,7 @@
     <Nullable>disable</Nullable><ImplicitUsings>disable</ImplicitUsings><LangVersion>7.3</LangVersion>
     <AssemblyName>VCEFlourAlternatives</AssemblyName><OutputType>Library</OutputType>
     <Deterministic>true</Deterministic><GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <Version>0.1.0</Version><CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <Version>0.2.0</Version><CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
     <NuGetAudit>false</NuGetAudit>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
