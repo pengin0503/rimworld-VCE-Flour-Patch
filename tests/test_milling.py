@@ -5,11 +5,13 @@ import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parents[1]
 MOD = ROOT / 'VCE-Flour-Alternatives'
 EXPECTED = {
-    'PFA_MillRice': ('RawRice', 'PFA_RiceFlour', 20, 800, ' x2'),
-    'PFA_MillRiceBulk': ('RawRice', 'PFA_RiceFlour', 80, 3200, ' x8'),
-    'PFA_MillCorn': ('RawCorn', 'PFA_Cornmeal', 20, 800, ' x2'),
-    'PFA_MillCornBulk': ('RawCorn', 'PFA_Cornmeal', 80, 3200, ' x8'),
+    'PFA_MillRice': ('RawRice', 'PFA_RiceFlour', 20, 150, ' x2'),
+    'PFA_MillRiceBulk': ('RawRice', 'PFA_RiceFlour', 80, 600, ' x8'),
+    'PFA_MillCorn': ('RawCorn', 'PFA_Cornmeal', 20, 150, ' x2'),
+    'PFA_MillCornBulk': ('RawCorn', 'PFA_Cornmeal', 80, 600, ' x8'),
 }
+# VCE wheat yields 27 flour for 200 harvest work (about 7.4 per unit); milling costs about the same.
+WORK_PER_UNIT = 7.5
 
 class MillingTests(unittest.TestCase):
     def recipes(self):
@@ -28,14 +30,16 @@ class MillingTests(unittest.TestCase):
                 self.assertEqual(recipe.findtext('ingredients/li/count'), str(count))
                 self.assertEqual([(p.tag, p.text) for p in recipe.find('products')], [(product, str(count))])
                 self.assertEqual(recipe.findtext('workAmount'), str(work))
+                self.assertEqual(work, count * WORK_PER_UNIT)
 
-    def test_batches_keep_stoves_cooking_and_source_filters(self):
+    def test_batches_run_at_stoves_or_crafting_spot_without_a_skill(self):
+        # The crafting spot is served by the Crafting work type, so non-cooks can mill.
         for name, recipe in self.recipes().items():
             source = EXPECTED[name][0]
             with self.subTest(recipe=name):
-                self.assertEqual([n.text for n in recipe.findall('recipeUsers/li')], ['FueledStove', 'ElectricStove'])
-                self.assertEqual(recipe.findtext('workSkill'), 'Cooking')
-                self.assertEqual(recipe.findtext('workSpeedStat'), 'CookSpeed')
+                self.assertEqual([n.text for n in recipe.findall('recipeUsers/li')], ['FueledStove', 'ElectricStove', 'CraftingSpot'])
+                self.assertIsNone(recipe.find('workSkill'))
+                self.assertEqual(recipe.findtext('workSpeedStat'), 'GeneralLaborSpeed')
                 for tag in ('fixedIngredientFilter', 'defaultIngredientFilter'):
                     self.assertEqual([n.text for n in recipe.findall(tag + '/thingDefs/li')], [source])
 
