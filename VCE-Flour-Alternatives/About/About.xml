@@ -3,13 +3,13 @@
   <name>VCE Flour Alternatives</name>
   <author>pengin0503</author>
   <packageId>pengin0503.vce.flouralternatives</packageId>
-  <modVersion>0.2.0</modVersion>
+  <modVersion>0.3.0</modVersion>
   <url>https://github.com/pengin0503/rimworld-VCE-Flour-Patch</url>
   <supportedVersions>
     <li>1.6</li>
     <li>1.7</li>
   </supportedVersions>
-  <description>Adds rice flour and cornmeal made from vanilla rice and corn at fueled and electric stoves. Both powders can substitute for wheat flour in Vanilla Cooking Expanded's baked meals. No new meals are introduced. Requires Harmony, Vanilla Expanded Framework and Vanilla Cooking Expanded.</description>
+  <description>Adds rice flour and cornmeal made from vanilla rice and corn at fueled and electric stoves or a crafting spot. Both powders can substitute for wheat flour in Vanilla Cooking Expanded's baked meals. No new meals are introduced. Requires Harmony, Vanilla Expanded Framework and Vanilla Cooking Expanded.</description>
   <modDependencies>
     <li>
       <packageId>brrainz.harmony</packageId>

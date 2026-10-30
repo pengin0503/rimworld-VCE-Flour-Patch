@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
+  <!-- Milling needs no skill and is offered at the crafting spot too, so non-cooks can do it.
+       Work per unit (7.5) is close to the harvest work per unit of VCE wheat (200 for 27 flour). -->
   <RecipeDef>
     <defName>PFA_MillRice</defName>
     <label>mill rice into rice flour x2</label>
     <description>Grind 20 rice into 20 rice flour, which can replace wheat flour in VCE baked meals.</description>
     <jobString>Grinding rice into rice flour.</jobString>
-    <workAmount>800</workAmount>
-    <workSkill>Cooking</workSkill>
-    <workSpeedStat>CookSpeed</workSpeedStat>
+    <workAmount>150</workAmount>
+    <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_CookMeal</soundWorking>
     <recipeUsers>
       <li>FueledStove</li>
       <li>ElectricStove</li>
+      <li>CraftingSpot</li>
     </recipeUsers>
     <fixedIngredientFilter>
       <thingDefs><li>RawRice</li></thingDefs>
@@ -34,14 +36,14 @@
     <label>mill rice into rice flour x8</label>
     <description>Grind 80 rice into 80 rice flour, which can replace wheat flour in VCE baked meals.</description>
     <jobString>Grinding rice into rice flour.</jobString>
-    <workAmount>3200</workAmount>
-    <workSkill>Cooking</workSkill>
-    <workSpeedStat>CookSpeed</workSpeedStat>
+    <workAmount>600</workAmount>
+    <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_CookMeal</soundWorking>
     <recipeUsers>
       <li>FueledStove</li>
       <li>ElectricStove</li>
+      <li>CraftingSpot</li>
     </recipeUsers>
     <fixedIngredientFilter>
       <thingDefs><li>RawRice</li></thingDefs>
@@ -63,14 +65,14 @@
     <label>mill corn into cornmeal x2</label>
     <description>Grind 20 corn into 20 cornmeal, which can replace wheat flour in VCE baked meals.</description>
     <jobString>Grinding corn into cornmeal.</jobString>
-    <workAmount>800</workAmount>
-    <workSkill>Cooking</workSkill>
-    <workSpeedStat>CookSpeed</workSpeedStat>
+    <workAmount>150</workAmount>
+    <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_CookMeal</soundWorking>
     <recipeUsers>
       <li>FueledStove</li>
       <li>ElectricStove</li>
+      <li>CraftingSpot</li>
     </recipeUsers>
     <fixedIngredientFilter>
       <thingDefs><li>RawCorn</li></thingDefs>
@@ -92,14 +94,14 @@
     <label>mill corn into cornmeal x8</label>
     <description>Grind 80 corn into 80 cornmeal, which can replace wheat flour in VCE baked meals.</description>
     <jobString>Grinding corn into cornmeal.</jobString>
-    <workAmount>3200</workAmount>
-    <workSkill>Cooking</workSkill>
-    <workSpeedStat>CookSpeed</workSpeedStat>
+    <workAmount>600</workAmount>
+    <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
     <effectWorking>Cook</effectWorking>
     <soundWorking>Recipe_CookMeal</soundWorking>
     <recipeUsers>
       <li>FueledStove</li>
       <li>ElectricStove</li>
+      <li>CraftingSpot</li>
     </recipeUsers>
     <fixedIngredientFilter>
       <thingDefs><li>RawCorn</li></thingDefs>
