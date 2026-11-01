@@ -1,102 +1,21 @@
 # VCE Flour Alternatives / VCE小麦粉代替パッチ
 
-Vanilla Cooking Expanded（VCE）の既存の焼き料理に、**米粉とトウモロコシ粉を小麦粉の代替として追加**するMODです。専用料理や製粉設備は追加しません。
+**日本語** | [English](README.en.md)
 
-**状態：最新リリースは正式版 v0.3.0。製粉の工数・作業場所の変更はゲーム内で未検証です。1.6/1.7のビルドと自動テストは確認済みです。**
+Vanilla Cooking Expanded（VCE）の焼き料理で、米粉とトウモロコシ粉を小麦粉の代わりに使えるようにするMODです。新しい料理や製粉設備は追加しません。
+
+## 必要環境と導入
+
+RimWorld 1.6または1.7、Harmony、Vanilla Expanded Framework、Vanilla Cooking Expandedが必要です。HarmonyをCoreより上に置き、Framework、VCE、このMODの順に読み込んでください。
+
+[Releases](https://github.com/pengin0503/rimworld-VCE-Flour-Patch/releases) のMOD用ZIPを展開し、MODフォルダをRimWorldの `Mods` に置いて有効化します。セーブのバックアップを推奨します。
 
 ## 機能
 
-- 米粉・トウモロコシ粉の製粉指示は各2種類：2倍量は原料20個→粉20個・工数150、8倍量は原料80個→粉80個・工数600。
-- バニラのかまど・電気コンロ・製作場所で製造。原料・完成品・工数を同じ倍率で増やすため、1個当たりのコストは同じです。
-- 製粉に技能は不要で、作業速度は一般作業速度（作業者の操作・視覚に依存）を使います。かまど・電気コンロでは「調理」、製作場所では「製作」の仕事として扱われるため、製作場所を使えば料理人とかまどの時間を使わずに製粉できます。製作場所は道具がないため作業台の速度が0.5倍で、実際の作業時間は2倍になります。
-- 1個当たりの工数7.5は、VCEの小麦の収穫工数（27個に200、1個約7.4）に合わせた値です。かまどで製粉した場合、手の込んだ・贅沢な焼き料理は通常の食事より栄養当たりの調理・製粉工数が約6%少なくなります（材料は多く使います）。簡単な焼き料理は通常の簡単な食事より工数が多いままです。
-- 既存の製粉指示は2倍量へ引き継ぎます。8倍量を使う場合は新しい指示を追加してください。
-- VCE標準の焼き料理7レシピで、小麦粉・米粉・トウモロコシ粉から1種類を使用。
-- 小麦粉5＋米粉5など、**異なる粉の合算は禁止**。同じ種類の複数スタックは合算可能。
-- 肉・野菜などの混合は元のレシピどおり。美食焼き料理の元々の混合禁止も維持。
-- 新しい粉の栄養価は小麦粉と同じ0.05。既存の小麦粉・料理の性能、材料費は変更しません。
-- 小麦粉・米粉・トウモロコシ粉を「穀物粉」（英語：grain flour）カテゴリーにまとめ、対象料理の粉枠もこのカテゴリーを参照します。別の粉はこのカテゴリーへ登録すれば対象料理で使えます。
-- 提供された128×128透過PNGをそのまま使用（ファイル名は `VCE_FPatch_` 接頭辞）。日本語表示に対応。
-
-| 対象レシピ | 製品数 | 粉の必要個数（標準の栄養価） |
-|---|---:|---:|
-| VCE_CookBakeSimple | 2 | 20 |
-| VCE_CookBakeSimpleBulk | 8 | 80 |
-| VCE_CookBakeFine | 2 | 10 |
-| VCE_CookBakeFineBulk | 8 | 40 |
-| VCE_CookBakeLavish | 2 | 20 |
-| VCE_CookBakeLavishBulk | 8 | 80 |
-| VCE_CookBakeGourmet | 2 | 20 |
-
-VCE Bakeryなど別MODのレシピは対象外です。小麦粉を使う全レシピへ自動適用する実装ではありません。
-
-## 必要MOD・対応バージョン
-
-RimWorld **1.6 / 1.7を対象**に個別ビルドします。ユーザーの1.7環境でゲーム内検証の成功報告を受領しています。1.6の実機確認は個別の報告を受けていません。
-
-必要なものはHarmony、Vanilla Expanded Framework、Vanilla Cooking Expandedです。HarmonyはCoreより上、Framework→VCE→当MODの順に配置してください。
-
-| ビルド対象 | 固定した参照アセンブリ | .NET | コンパイル時Harmony |
-|---|---|---|---|
-| 1.6 | Krafs.Rimworld.Ref 1.6.4871 | .NET Framework 4.7.2 | 2.4.3 |
-| 1.7 | Krafs.Rimworld.Ref 1.7.4977-alpha.1（Assembly-CSharp 1.7.9782） | .NET 10 | 3.0.0-rc.3 |
-
-参照アセンブリはAPIの宣言だけを持つビルド用パッケージです。ゲーム本体の動作試験には使えません。
-
-1.7のDLLは、参照したゲームアセンブリより**古い**ゲームビルドでは読み込めません（.NETは要求より低いバージョンを結び付けないため）。そのため1.7は公開されている最古の参照（1.7.9782）でビルドし、1.7.9782以降のビルドで読み込めるようにしています。1.7.9787.38423では読み込みと下記のゲーム実処理テストを確認済みです。
-
-## 入手・インストール
-
-[正式版 v0.3.0](https://github.com/pengin0503/rimworld-VCE-Flour-Patch/releases/tag/v0.3.0) のAssetsから `VCE-Flour-Alternatives-0.3.0.zip` を入手できます。
-
-**注意**：v0.1.0-beta.1の1.7用DLLは新しい参照（Assembly-CSharp 1.7.9790）でビルドしたため、それより前の1.7ビルドでは読み込めない可能性が高いです。読み込めないと粉の合算防止が働きません。修正を含む正式版 v0.1.0を使ってください。
-
-開発版を検証する場合は、[Actions](https://github.com/pengin0503/rimworld-VCE-Flour-Patch/actions/workflows/verify.yml)の成功した実行から `VCE-Flour-Alternatives-development` artifactを取得してください。中の `VCE-Flour-Alternatives-dev.zip` がMOD本体、`build-manifest.json` がビルド情報です。GitHubへのログインが必要な場合があります。
-
-1. セーブをバックアップし、検証用コピーを用意します。
-2. MOD本体ZIPを展開し、`VCE-Flour-Alternatives` フォルダをRimWorldの `Mods` に置きます。
-3. `About/About.xml` と、`1.6/Assemblies`・`1.7/Assemblies` のDLLを確認します。フォルダの二重入れ子に注意してください。
-4. 必要MODと当MODを有効にし、再起動します。
-5. かまど・電気コンロ・製作場所のいずれかで製粉指示を追加します。
-6. 焼き料理の材料設定で使用する粉を許可します。
-   - **当MODの導入前からある製造指示**は、セーブ済みの材料設定を使うため、米粉・トウモロコシ粉が未許可です。v0.2.0からは、導入後に初めてセーブを読み込んだときに、小麦粉を許可している指示で両方を許可するかを1回だけ確認します（小麦粉を許可していない指示は変更しません）。導入後に作った指示では最初から許可されています。
-   - 導入前は小麦粉が「固定材料」だったため、材料設定で小麦粉のチェックを外しても効果がありませんでした。導入後はこのチェックが有効になります。過去に小麦粉のチェックを外していた指示は小麦粉を使わなくなるので、確認してください。
-
-GitHubの「Download ZIP」や自動生成される「Source code」は開発用ソースで、DLLを含みません。ゲームにそのまま導入しないでください。
-
-## 実装と制限
-
-XMLは7つの具体的なレシピにだけ穀物粉カテゴリーを追加し、共通の抽象親は変更しません。穀物粉カテゴリー `PFA_GrainFlour` は `PlantMatter` の子で、小麦粉もこの子カテゴリーへ移します（ほかのカテゴリー所属は保持）。子レシピのfixed/defaultフィルターは元の親フィルターを継承します。粉枠には表示名 `customSummary` を付けます。粉枠が複数の材料を許可するとゲームが汎用の「原料」と表示するためです。XMLでは英語（grain flour）を設定し、初期化時に小麦粉を受け付ける枠へKeyed翻訳 `PFA_GrainFlourSlot`（日本語「穀物粉」）を設定します。材料枠の位置（添字）には依存しません。
-
-fixed/defaultフィルターへの追加は、VCEのレシピが自前のフィルターを持つ場合・持たない場合のどちらでも1つのフィルターにまとまるよう、3通りの追加操作のうち該当する1つだけが働く構成です。粉枠への追加は失敗時にエラーになる通常の操作です。初期化時には、7レシピそれぞれに小麦粉を受け付ける枠がちょうど1つあるかを確認し、満たさないレシピを警告ログに出します。
-
-導入前からある製造指示は、読込時に1回だけ確認ダイアログで移行します（`GameComponent_FlourBillMigration`、セーブごとに実施済みフラグを保存）。
-
-初期化時に、対象7レシピの `fixedIngredientFilter` だけで `AllowPlantFood` を許可します。VCEから継承するこの特殊フィルターは、`RoughPlantBase` の `foodType=Plant` を持つ3種類の粉を材料設定の一覧から隠すためです。材料候補の一覧や、ほかの特殊フィルター・別レシピの制限は維持します。
-
-C#は `WorkGiver_DoBill.TryFindBestBillIngredientsInSet_AllowMix` の正確な5引数シグネチャを確認してパッチします。どれが粉かは名前の一覧ではなく、レシピ内で小麦粉を受け付ける材料枠（粉枠）が許可する定義で判断します。他MODが粉枠に別の粉を追加した場合も、それを独立した1種類として扱い、他の粉との合算を防ぎます。粉を1種類ずつに絞ったリストのコピーを渡し、粉の種類数だけ元の材料選択処理を呼びます。必要量・材料許可・粉以外の選択はゲーム側の判定を使い、`allowMixingIngredients` は変更しません。再帰ガードと例外時の復元、失敗時の一時選択破棄を実装しています。
-
-パッチ初期化に失敗した場合はエラーを記録し、対象料理の粉枠から追加2種類の粉を外します。小麦粉と他材料は残り、粉枠の表示も「小麦粉」に戻ります。fixed/defaultフィルターは変更しません。ゲームはセーブ時に、fixedフィルターにない材料を製造指示の許可設定から削除するためです。これにより、失敗中にセーブしても、プレイヤーの米粉・トウモロコシ粉の許可設定は失われません。DLL自体を入れ忘れるとこの保護も動かないため、配布生成時は両版のDLLを必須としています。
-
-他MODのパッチも元メソッド呼び出し時に実行されますが、すべての調理MODとの互換性を保証するものではありません。対象メソッドを置換・中止するMODや、当MODを継承元にするレシピ追加MODは個別検証が必要です。
+- 米粉とトウモロコシ粉を、かまど・電気コンロ・製作場所で作成できます。20個の原料から粉20個、または80個から80個を作ります。製作場所では作業速度が半分です。
+- VCE標準の焼き料理7レシピで、3種類の粉から1種類を使用できます。同じ種類の複数スタックは使えますが、異なる粉は混ぜられません。VCE Bakeryなど他MODのレシピは対象外です。
+- 既存の製粉指示は20個の指示へ引き継がれます。80個の指示は新たに追加してください。新しい粉の栄養価は小麦粉と同じです。
 
 ## 検証状況
 
-- v0.3.0：製粉の工数を1個当たり40から7.5へ下げ、技能を不要にし、製作場所でも製粉できるようにしました。製粉テストを更新し、Pythonテストが成功。ゲーム内での製粉動作は未確認です。
-- v0.2.0：Python 27件、C#選択ポリシー18件、実Harmony 3＋ゲームAPI形状の代替環境14シナリオ、1.6/1.7ビルド・API検査が成功。RimWorld 1.7.9787.38423の実アセンブリ（依存DLLを含む）でゲームの材料選択処理・XMLパッチ・継承解決の検査が成功。製造指示の移行確認はゲーム内で未確認です。
-- 以下はv0.1.0時点の記録です。
-- Python：20件成功（XML、実VCE定義との比較、表示名と日本語訳の対応、画像、ロード構成、梱包）。
-- C#選択ポリシー：15件成功。
-- 実Harmony 3＋ゲームAPI形状の代替環境：13シナリオ成功。
-- 1.6/1.7：警告・エラーなしでDLLビルド、APIシグネチャ／対象ランタイム／参照バージョン検査成功。
-- RimWorld 1.7.9787.38423の実アセンブリ（ローカル検査）：33項目成功。ゲームの材料選択処理、XMLパッチ適用・継承解決、DLLの読み込み可否、初期化失敗時の動作。
-- 今回の表示不具合：RimWorld 1.7.9790.38077の実アセンブリで修正前の非表示を再現し、修正後に3種類の粉が表示対象となることを確認。カテゴリー経由の追加粉の受け入れ・材料探索などを含む37項目成功（画面描画そのものは未確認）。
-- **ゲーム内検証**：2026-10-24、ユーザーから検証成功の報告を受領し、正式版の公開を決定。個別の試験項目・1.6実機の詳細記録は未受領です。
-
-詳細とリリース前の必須チェックリストは [検証記録](docs/VALIDATION.md)、判断理由は [作業記録](docs/WORK_LOG.md) にあります。
-
-## English
-
-VCE Flour Alternatives adds rice and corn flour as alternatives to wheat flour in seven Vanilla Cooking Expanded baking recipes. Different flour types cannot be combined in one recipe, although multiple stacks of the same flour can. The patch adds milling bills in 20- and 80-unit batches at stoves and crafting spots; the crafting spot works at half speed. It does not add new dishes or apply to recipes from other mods such as VCE Bakery.
-
-Supports RimWorld 1.6 and 1.7. Requires Harmony, Vanilla Expanded Framework and Vanilla Cooking Expanded. Load Harmony before Core, then Framework, VCE and this patch. Download the mod ZIP from [Releases](https://github.com/pengin0503/rimworld-VCE-Flour-Patch/releases), extract it into the RimWorld `Mods` folder and enable it. Back up existing saves before changing mods. The user reported successful in-game testing on 1.7; 1.6 has no separate in-game confirmation, and the latest milling work amounts and workstations remain unverified in-game.
+1.7でのゲーム内確認の成功報告があります。1.6の実機確認は個別に報告されていません。最新版の製粉工数・作業場所の変更はゲーム内未検証です。
