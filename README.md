@@ -64,39 +64,6 @@ RimWorld **1.6 / 1.7を対象**に個別ビルドします。ユーザーの1.7�
 
 GitHubの「Download ZIP」や自動生成される「Source code」は開発用ソースで、DLLを含みません。ゲームにそのまま導入しないでください。
 
-## ビルド・テスト
-
-.NET 10 SDK、Python 3.12以上を用意してください。通常のビルドではゲーム本体DLLは不要です。
-
-```sh
-python -m pip install -r requirements-test.txt
-python tools/verify.py
-```
-
-静的テスト、C#選択ポリシー、実Harmony 3を使った境界テスト、両バージョンのDLLビルド、私有APIのシグネチャと参照バージョンの検査、配布ZIP生成を順に実行します。生成先は `artifacts/`。`DOTNET` 環境変数でSDK実行ファイルを指定できます。
-
-### 自分のRimWorld 1.7で確認する（任意・ローカル専用）
-
-自分の正規インストールの1.7アセンブリがあれば、ゲームの実際の材料選択処理・XMLパッチ適用・XML継承解決を、ビルドしたDLLで動かす検査も実行できます。CIにはゲームDLLがないため、環境変数を指定しない場合は省略されます。
-
-```sh
-RIMWORLD_17_MANAGED_DIR=/path/to/RimWorld/1.7/Managed \
-RIMWORLD_17_HARMONY=/path/to/Harmony/1.7/Assemblies/0Harmony.dll \
-python tools/verify.py
-```
-
-`RIMWORLD_17_HARMONY` を省略すると `RIMWORLD_17_MANAGED_DIR/0Harmony.dll` を使います。この検査は栄養値の計算を固定値に置き換え、エンジン依存のログ・プロファイラなどを止めて実行するもので、ゲーム内試験の代わりにはなりません（運搬・消費・セーブ・UIは対象外）。1.6はMono上で動くため対象外です。
-
-WindowsでDLLのみをビルド・配置する場合：
-
-```powershell
-./build.ps1
-# 自分の正規インストールのDLLで確認する場合は各版を個別指定
-./build.ps1 -Version 1.6 -RimWorldManagedDir 'C:\path\to\Managed' -HarmonyAssemblyPath 'C:\path\to\Harmony\0Harmony.dll'
-```
-
-1.7ではその版のゲームアセンブリがあるディレクトリとHarmony 3を指定してください。ゲームDLL・Harmony DLLはリポジトリにもMOD配布ZIPにも同梱しません。`tools/package_mod.py` 単体は簡易的なファイル検査だけなので、配布前には必ず `tools/verify.py` 全体を通してください。
-
 ## 実装と制限
 
 XMLは7つの具体的なレシピにだけ穀物粉カテゴリーを追加し、共通の抽象親は変更しません。穀物粉カテゴリー `PFA_GrainFlour` は `PlantMatter` の子で、小麦粉もこの子カテゴリーへ移します（ほかのカテゴリー所属は保持）。子レシピのfixed/defaultフィルターは元の親フィルターを継承します。粉枠には表示名 `customSummary` を付けます。粉枠が複数の材料を許可するとゲームが汎用の「原料」と表示するためです。XMLでは英語（grain flour）を設定し、初期化時に小麦粉を受け付ける枠へKeyed翻訳 `PFA_GrainFlourSlot`（日本語「穀物粉」）を設定します。材料枠の位置（添字）には依存しません。
@@ -128,20 +95,8 @@ C#は `WorkGiver_DoBill.TryFindBestBillIngredientsInSet_AllowMix` の正確な5�
 
 詳細とリリース前の必須チェックリストは [検証記録](docs/VALIDATION.md)、判断理由は [作業記録](docs/WORK_LOG.md) にあります。
 
-## リリース手順
+## English
 
-1. `Source/VCEFlourAlternatives.csproj` の `<Version>`、`About/About.xml` の `<modVersion>`、MOD内 `README.md` 1行目の版をそろえる（テストで一致を確認します）。
-2. [検証記録](docs/VALIDATION.md) のチェックリストを1.6/1.7で実施して記入する。
-3. `.github/releases/v<版>.md` にリリースノートを置き、mainへ反映する。
-4. `v<版>`（例：`v0.2.0`、プレリリースは `v0.2.0-beta.1`）のタグをmain上のコミットに付けてpushする。またはGitHubのActions → `Publish release` → Run workflow でmainを選び、同じ形式のタグを入力する。`Publish release` ワークフローが、タグと版の一致を確認し、そのコミットでビルド・検証・梱包検査をしてからリリースを作成します（手動実行では、検査に通った後でタグを作ります）。
+VCE Flour Alternatives adds rice and corn flour as alternatives to wheat flour in seven Vanilla Cooking Expanded baking recipes. Different flour types cannot be combined in one recipe, although multiple stacks of the same flour can. The patch adds milling bills in 20- and 80-unit batches at stoves and crafting spots; the crafting spot works at half speed. It does not add new dishes or apply to recipes from other mods such as VCE Bakery.
 
-VCE本体の定義は、`Check upstream VCE` ワークフローが毎週、最新版に対して静的テストを実行して確認します。
-
-## 参照
-
-- [Vanilla Cooking Expanded](https://github.com/Vanilla-Expanded/VanillaCookingExpanded)
-- [Vanilla Expanded Framework](https://github.com/Vanilla-Expanded/VanillaExpandedFramework)
-- [RimRef](https://github.com/krafs/RimRef)
-- [Harmony for RimWorld](https://github.com/pardeike/HarmonyRimWorld)
-
-非公式の互換アドオンです。VCE本体のファイルは改変しません。
+Supports RimWorld 1.6 and 1.7. Requires Harmony, Vanilla Expanded Framework and Vanilla Cooking Expanded. Load Harmony before Core, then Framework, VCE and this patch. Download the mod ZIP from [Releases](https://github.com/pengin0503/rimworld-VCE-Flour-Patch/releases), extract it into the RimWorld `Mods` folder and enable it. Back up existing saves before changing mods. The user reported successful in-game testing on 1.7; 1.6 has no separate in-game confirmation, and the latest milling work amounts and workstations remain unverified in-game.
